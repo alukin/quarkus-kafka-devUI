@@ -77,11 +77,18 @@ public class KafkaDevUiResource {
         } else {
             try {
                 switch (action) {
+                    case "getInfo":
+                        message = webUtils.toJson(webUtils.getKafkaInfo());
+                        break;
                     case "createTopic":
                         res = adminClient.createTopic(key);
+                        message = webUtils.toJson(webUtils.getTopics());
                         break;
                     case "deleteTopic":
                         res = adminClient.deleteTopic(key);
+                        message = webUtils.toJson(webUtils.getTopics());
+                        break;
+                    case "getTopics":
                         message = webUtils.toJson(webUtils.getTopics());
                         break;
                     case "topicMessages":

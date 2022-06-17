@@ -49,13 +49,14 @@
                         {
                             action: "createTopic",
                             key: topicName,
-                            value: "no data"
+                            value: ""
                         },
                         function (data, status) {
                             if (status === "success") {
+                                updateTopicsDiv(data);
                                 console.log("Topic created: " + topicName);
                             } else {
-                                console.error("Error creating topic");
+                                console.error("Error creating topic:",data);
                             }
                         });
             }
@@ -65,23 +66,49 @@
                         {
                             action: "deleteTopic",
                             key: topicName,
-                            value: "no data"
+                            value: ""
                         },
                         function (data, status) {
                             if (status === "success") {
+                                updateTopicsDiv(data);
                                 console.log("Topic deleted: " + topicName);
                             } else {
-                                console.error("Error deleting topic");
+                                console.error("Error deleting topic:",data);
                             }
                         });
             }
-
+            
+            function getTopics() {
+                $.post("",
+                        {
+                            action: "getTopics",
+                            key: "",
+                            value: ""
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                updateTopicsDiv(data);
+                                console.log("Topic updated: " + topicName);
+                            } else {
+                                console.error("Error getting topics: ",data);
+                            }
+                        });
+            }
+            
+            function updateTopicsDiv(data){
+                console.log(data);
+            }
+            
+            function errorPopUp(message){
+                alert(message);
+            }
+            
             function hideAllContentExcept(ex) {
                 const allDivs = ["topics", "partitions", "schema", "cgroups", "acls", "nodes", "topicmsg"];
                 for (let i = 0; i < allDivs.length; i++) {
                     var ename = allDivs[i];
                     var d = document.getElementById(ename);
-                    if (d != null) {
+                    if (d !== null) {
                         if (ename !== ex) {
                             d.style.display = "none";
                         } else {
@@ -95,6 +122,7 @@
 
             function show(id) {
                 hideAllContentExcept(id);
+                getTopics();
             }
 
             function topicMessages(topicName) {
@@ -114,9 +142,10 @@
                             }
                         });
             }
-
+            
             $(document).ready(function () {
                 hideAllContentExcept("topics");
+                
             });
 
         </script>   
