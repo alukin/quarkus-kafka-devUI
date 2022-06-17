@@ -49,14 +49,14 @@
                         {
                             action: "createTopic",
                             key: topicName,
-                            value: ""
+                            value: "0"
                         },
                         function (data, status) {
                             if (status === "success") {
-                                updateTopicsDiv(data);
+                                updateTopics(JSON.parse(data));
                                 console.log("Topic created: " + topicName);
                             } else {
-                                console.error("Error creating topic:",data);
+                                errorPopUp("Error creating topic:",data);
                             }
                         });
             }
@@ -66,14 +66,14 @@
                         {
                             action: "deleteTopic",
                             key: topicName,
-                            value: ""
+                            value: "0"
                         },
                         function (data, status) {
                             if (status === "success") {
-                                updateTopicsDiv(data);
+                                updateTopics(JSON.parse(data));
                                 console.log("Topic deleted: " + topicName);
                             } else {
-                                console.error("Error deleting topic:",data);
+                                errorPopUp("Error deleting topic:",data);
                             }
                         });
             }
@@ -82,24 +82,37 @@
                 $.post("",
                         {
                             action: "getTopics",
-                            key: "",
-                            value: ""
+                            key: "0",
+                            value: "0"
                         },
                         function (data, status) {
                             if (status === "success") {
-                                updateTopicsDiv(data);
-                                console.log("Topic updated: " + topicName);
+                                updateTopics(JSON.parse(data));
                             } else {
-                                console.error("Error getting topics: ",data);
+                                errorPopUp("Error getting topics: ",data);
                             }
                         });
             }
             
-            function updateTopicsDiv(data){
-                console.log(data);
+            function updateTopics(data){
+               var content = ''; 
+               for (var i = 0; i < data.length; i++) {                   
+                   content+='<tr id=ttr-"' + data[i].name + '"</tr>';
+                   content+='<td>'+data[i].name+'</td>';
+                   content+='<td>'+data[i].topicId+'</td>';
+                   content+='<td>'+data[i].nmgs+'</td>';
+                   content+='<td><button class="link" onclick="deleteTopic(\''+data[i].name+'\')">Delete</button> &nbsp; &nbsp;';
+                   content+='<button class="link" onclick="topicMessages(\''+data[i].name+'\')">Messages</button></td>';
+                   content+='</tr>';
+               }
+               $('#topics-table tbody').html(content);
             }
             
-            function errorPopUp(message){
+            function errorPopUp(){
+                var message="";
+                for (var i = 0; i < arguments.length; i++) {
+                    message+=arguments[i]+" ";
+                }
                 alert(message);
             }
             
@@ -121,8 +134,7 @@
             }
 
             function show(id) {
-                hideAllContentExcept(id);
-                getTopics();
+                hideAllContentExcept(id);               
             }
 
             function topicMessages(topicName) {
@@ -145,7 +157,7 @@
             
             $(document).ready(function () {
                 hideAllContentExcept("topics");
-                
+                getTopics();
             });
 
         </script>   
@@ -179,20 +191,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {#for item in info:kafkaInfos.topics} 
-                            <tr id="ttr-{
-                                    item.name
-                                }">
-                                <td>{item.name}</td>
-                                <td>{item.topicId}</td>
-                                <td>{item.nmsg}</td>
-                                <td>
-                                    <button class="link" onclick="deleteTopic('{item.name}')">Delete</button>
-                                    &nbsp; &nbsp;
-                                    <button class="link" onclick="topicMessages('{item.name}')">Messages</button>
-                                </td>
-                            </tr> 
-                            {/for}           
                         </tbody>
                     </table>
                     <hr>
