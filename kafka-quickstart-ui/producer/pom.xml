@@ -52,11 +52,15 @@
             <artifactId>resteasy-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency> <!-- we use this to have more or less compatible code with the extension's dev UI POST handler-->
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-reactive-routes</artifactId>
+        </dependency>        
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>        
     </dependencies>
     <build>
         <plugins>

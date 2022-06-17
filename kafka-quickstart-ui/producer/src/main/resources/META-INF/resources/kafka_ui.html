@@ -1,9 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>kafka-devUI</title>
-</head>
-Bklakaka
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>kafka-devUI</title>
+        <link rel="stylesheet" href="/q/dev/resources/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/q/dev/resources/fontawesome/css/all.min.css">
+         
+        <script src="/q/dev/resources/js/jquery.min.js"></script>
+        <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
+        
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            .column {
+                float: left;
+                padding: 10px;
+            }
+
+            .left {
+                width: 15%;
+            }
+
+            .right {
+                width: 85%;
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            .link {
+                background:none;
+                border:none;
+                background-color:#005fff;
+                color:#ffffff
+            }
+        </style>
+
+        
+        <script>
+            function createTopic() {
+                var topicName = document.getElementById("create_topic").value;
+                $.post("",
+                        {
+                            action: "createTopic",
+                            key: topicName,
+                            value: "no data"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                console.log("Topic created: " + topicName);
+                            } else {
+                                console.error("Error creating topic");
+                            }
+                        });
+            }
+
+            function deleteTopic(topicName) {
+                $.post("",
+                        {
+                            action: "deleteTopic",
+                            key: topicName,
+                            value: "no data"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                console.log("Topic deleted: " + topicName);
+                            } else {
+                                console.error("Error deleting topic");
+                            }
+                        });
+            }
+
+            function hideAllContentExcept(ex) {
+                const allDivs = ["topics", "partitions", "schema", "cgroups", "acls", "nodes", "topicmsg"];
+                for (let i = 0; i < allDivs.length; i++) {
+                    var ename = allDivs[i];
+                    var d = document.getElementById(ename);
+                    if (d != null) {
+                        if (ename !== ex) {
+                            d.style.display = "none";
+                        } else {
+                            d.style.display = "block";
+                        }
+                    } else {
+                        console.log("Can not find div ", allDivs[i]);
+                    }
+                }
+            }
+
+            function show(id) {
+                hideAllContentExcept(id);
+            }
+
+            function topicMessages(topicName) {
+                hideAllContentExcept("topicmsg");
+                $.post("",
+                        {
+                            action: "topicMessages",
+                            key: topicName,
+                            value: "0"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                console.log("Topic messages OK: " + topicName);
+                                //TODO: put data into the table
+                            } else {
+                                console.error("Error getting topic messages");
+                            }
+                        });
+            }
+
+            $(document).ready(function () {
+                hideAllContentExcept("topics");
+            });
+
+        </script>   
+    </head>
+
+    <body>
+
+        <!--<div class="row" style="background-color:#005fff; color:#ffffff">  
+        </div>-->
+        <div class="row">
+            <div class="column left" style="background-color:#005fff; color:#ffffff">
+                <h3>Kafka dev UI</h3>
+                <p><button class="link" onclick="show('topics')">Topics</button></p>
+                <p><button class="link" onclick="show('partitions')">Partitions</button></p>
+                <p><button class="link" onclick="show('schema')">Schema registry</button></p>
+                <p><button class="link" onclick="show('cgroups')">Consumer groups</button></p>
+                <p><button class="link" onclick="show('acls')">Access control list</button></p>
+                <p><button class="link" onclick="show('nodes')">Cluster Nodes</button></p>
+            </div>
+
+            <div class="column right" style="background-color:#ffffff;">
+
+                <div id="topics">
+                    <table class="table" id="topics-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Topic Name</th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Nubmer of msg</th>
+                                <th scope="col">Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#for item in info:kafkaInfos.topics} 
+                            <tr id="ttr-{
+                                    item.name
+                                }">
+                                <td>{item.name}</td>
+                                <td>{item.topicId}</td>
+                                <td>{item.nmsg}</td>
+                                <td>
+                                    <button class="link" onclick="deleteTopic('{item.name}')">Delete</button>
+                                    &nbsp; &nbsp;
+                                    <button class="link" onclick="topicMessages('{item.name}')">Messages</button>
+                                </td>
+                            </tr> 
+                            {/for}           
+                        </tbody>
+                    </table>
+                    <hr>
+                    <input type="text" name="key" value="new_topic" id="create_topic">
+                    <button class="btn btn-primary btn-sm" onclick="createTopic()">Create topic</button>
+                    <hr>
+                </div>     
+                <div id="topicmsg">
+                    <h3>Topic messages</h3>
+                    <table class="table" id="msg-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Offset</th>
+                                <th scope="col">Partition</th>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Key</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr></tr><!-- just empty row to be replaced by jQery fn -->
+                        </tbody>
+                    </table>
+                </div>    
+                <div id="partitions">
+                    Partitions<br>
+                    TBD
+                </div>
+
+                <div id="schema">
+                    Schema<br>
+                    TBD
+                </div> 
+
+                <div id="cgroups">
+                    <table class="table" id="cgropus-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">State</th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Coordinator</th>
+                                <th scope="col">Protocol</th>
+                                <th scope="col">Members</th>
+                                <th scope="col">Lag(Sum)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#for item in info:kafkaInfos.consumerGroups} 
+                            <tr id="ctr-{
+                                    item.name
+                                }"> 
+                                <td>{item.state}</td>
+                                <td>{item.name}</td>
+                                <td>{item.coordinator}</td>
+                                <td>{item.protocol}</td>
+                                <td>{item.members}</td>
+                                <td>{item.lag}</td>
+                            </tr>
+                            {/for}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="acls">
+                    ACL<br>
+                    TBD
+                </div>
+
+                <div id="nodes">
+                    <b>Kafka cluster id:</b> {info:kafkaInfos.clusterInfo.id} <br> 
+                    <b>Cluster controller node:</b> {info:kafkaInfos.clusterInfo.controller.host}:{info:kafkaInfos.clusterInfo.controller.port} <br>
+                    <b>ACL operations:</b> {info:kafkaInfos.clusterInfo.aclOperations}
+                    <h3>Cluster nodes</h3>
+                    <table class="table" id="cluster-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">host</th>
+                                <th scope="col">port</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#for item in info:kafkaInfos.clusterInfo.nodes} 
+                            <tr>
+                                <td>{item.id}</td>
+                                <td>{item.host}</td>
+                                <td>{item.port}</td>
+                            </tr>
+                            {/for}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </body>
 </html>
