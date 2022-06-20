@@ -2,30 +2,37 @@ package org.acme.kafka.producer;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
+import io.quarkus.kafka.client.runtime.KafkaTopicClient;
 import io.quarkus.kafka.client.runtime.KafkaWebUiUtils;
+import io.quarkus.kafka.client.runtime.devconsole.model.Order;
 import io.quarkus.vertx.web.Route;
 import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
+import org.jboss.logging.Logger;
+
+import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.inject.Inject;
-import org.jboss.logging.Logger;
+
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 public class KafkaDevUiResource {
-
     private static final Logger LOGGER = Logger.getLogger(KafkaDevUiResource.class);
 
     @Inject
     KafkaAdminClient adminClient;
+
+    @Inject
+    KafkaTopicClient topicClient;
     @Inject
     KafkaWebUiUtils webUtils;
-    
-//Some plmumbing code to provide execution environment similar to Dev UI in extension
+
+    //Sume plmumbing code to provide execution environment similar to Dev UI in extension
     @Route(methods = Route.HttpMethod.POST, path = "/kafka_ui.html")
     public void handleRoute(RoutingContext event) {
         if (event.getBody() != null) {
@@ -61,8 +68,8 @@ public class KafkaDevUiResource {
             event.response().end();
         }
     }
-    
-//This is method that could be copy-patsted to the extension KafkaDevConsoleRecorder.java
+
+    //This is method that could be copy-patsted to the extension KafkaDevConsoleRecorder.java
     public void handlePost(RoutingContext event, MultiMap form) {
 
         String action = form.get("action");
@@ -91,7 +98,7 @@ public class KafkaDevUiResource {
                         message = webUtils.toJson(webUtils.getTopics());
                         break;
                     case "topicMessages":
-                        message = readTopic(key, value);
+                        message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(0), 0L, 10L));
                         break;
                     default:
                         res = false;
@@ -110,12 +117,6 @@ public class KafkaDevUiResource {
             message = "ERROR";
             endResponse(event, BAD_REQUEST, message);
         }
-    }
-
-    private String readTopic(String topicName, String offset) {
-        System.out.println(
-                "=============Reading topic: " + topicName + " offset: " + offset + "===========");
-        return "";
     }
 
     private void endResponse(RoutingContext event, HttpResponseStatus status, String message) {
