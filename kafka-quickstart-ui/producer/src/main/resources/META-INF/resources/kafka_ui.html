@@ -183,7 +183,9 @@
                         },
                         function (data, status) {
                             if (status === "success") {
-                                updateInfo(JSON.parse(data));
+                                var d = JSON.parse(data);
+                                updateInfo(d);
+                                updateConsumerGroups(d.consumerGroups);
                             } else {
                                 errorPopUp("Error getting Kafka info: ", data);
                             }
@@ -212,6 +214,7 @@
                 var content = '';
                 var d = data.clusterInfo.nodes;
                 for (var i = 0; i < d.length; i++) {
+                    content += '<tr>';
                     content += '<td>' + d[i].host + '</td>';
                     content += '<td>' + d[i].port + '</td>';
                     content += '<td>' + d[i].id + '</td>';
@@ -220,7 +223,21 @@
                 $('#cluster-table tbody').html(content);
 
             }
-
+            
+            function updateConsumerGroups(data){
+                var content = '';
+                for(var i = 0; i < data.length; i++){
+                    content += '<tr>';
+                    content +='<td>'+ data[i].state+'</td>';
+                    content +='<td>'+ data[i].name+'</td>';
+                    content +='<td>'+ data[i].coordinator+'</td>';
+                    content +='<td>'+ data[i].protocol+'</td>';
+                    content +='<td>'+ data[i].members+'</td>';
+                    content +='<td>'+ data[i].lag+'</td>';
+                    content += '</tr>';
+                }
+                $('#cgropus-table tbody').html(content);
+            }
             function errorPopUp() {
                 var message = "";
                 for (var i = 0; i < arguments.length; i++) {
@@ -451,18 +468,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {#for item in info:kafkaInfos.consumerGroups}
-                            <tr id="ctr-{
-                                    item.name
-                                }">
-                                <td>{item.state}</td>
-                                <td>{item.name}</td>
-                                <td>{item.coordinator}</td>
-                                <td>{item.protocol}</td>
-                                <td>{item.members}</td>
-                                <td>{item.lag}</td>
-                            </tr>
-                            {/for}
                         </tbody>
                     </table>
                 </div>
