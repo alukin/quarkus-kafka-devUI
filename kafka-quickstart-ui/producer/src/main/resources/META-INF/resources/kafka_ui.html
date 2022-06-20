@@ -14,111 +14,45 @@
                 box-sizing: border-box;
             }
 
-    <script src="/q/dev/resources/js/jquery.min.js"></script>
-    <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
+            <script src="/q/dev/resources/js/jquery.min.js"></script>
+            <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        .column {
-            float: left;
-            padding: 10px;
-        }
-
-        .left {
-            width: 15%;
-        }
-
-        .right {
-            width: 85%;
-        }
-
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .link {
-            background: none;
-            border: none;
-            background-color: #005fff;
-            color: #ffffff
-        }
-
-        #msg-pagination {
-            margin-top: 0.8em;
-        }
-    </style>
-
-
-    <script>
-        function createTopic() {
-            var topicName = document.getElementById("create_topic").value;
-            $.post("",
-                {
-                    action: "createTopic",
-                    key: topicName,
-                    value: "0"
-                },
-                function (data, status) {
-                    if (status === "success") {
-                        updateTopics(JSON.parse(data));
-                        console.log("Topic created: " + topicName);
-                    } else {
-                        errorPopUp("Error creating topic:", data);
-                    }
-                });
-        }
-
-        function deleteTopic(topicName) {
-            $.post("",
-                {
-                    action: "deleteTopic",
-                    key: topicName,
-                    value: "0"
-                },
-                function (data, status) {
-                    if (status === "success") {
-                        updateTopics(JSON.parse(data));
-                        console.log("Topic deleted: " + topicName);
-                    } else {
-                        errorPopUp("Error deleting topic:", data);
-                    }
-                });
-        }
-
-        function getTopics() {
-            $.post("",
-                {
-                    action: "getTopics",
-                    key: "0",
-                    value: "0"
-                },
-                function (data, status) {
-                    if (status === "success") {
-                        updateTopics(JSON.parse(data));
-                    } else {
-                        errorPopUp("Error getting topics: ", data);
-                    }
-                });
-        }
-
-        function updateTopics(data) {
-            var content = '';
-            for (var i = 0; i < data.length; i++) {
-                content += '<tr id=ttr-"' + data[i].name + '"</tr>';
-                content += '<td>' + data[i].name + '</td>';
-                content += '<td>' + data[i].topicId + '</td>';
-                content += '<td>' + data[i].nmgs + '</td>';
-                content += '<td><button class="link" onclick="deleteTopic(\'' + data[i].name + '\')">Delete</button> &nbsp; &nbsp;';
-                content += '<button class="link" onclick="topicMessages(\'' + data[i].name + '\')">Messages</button></td>';
-                content += '</tr>';
+            <style>
+            * {
+                box-sizing: border-box;
             }
-            $('#topics-table tbody').html(content);
-        }
+
+            .column {
+                float: left;
+                padding: 10px;
+            }
+
+            .left {
+                width: 15%;
+            }
+
+            .right {
+                width: 85%;
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            .link {
+                background: none;
+                border: none;
+                background-color: #005fff;
+                color: #ffffff
+            }
+
+            #msg-pagination {
+                margin-top: 0.8em;
+            }
+        </style>
+
 
         <script>
             function createTopic() {
@@ -138,8 +72,74 @@
                             }
                         });
             }
-            alert(message);
-        }
+
+            function deleteTopic(topicName) {
+                $.post("",
+                        {
+                            action: "deleteTopic",
+                            key: topicName,
+                            value: "0"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                updateTopics(JSON.parse(data));
+                                console.log("Topic deleted: " + topicName);
+                            } else {
+                                errorPopUp("Error deleting topic:", data);
+                            }
+                        });
+            }
+
+            function getTopics() {
+                $.post("",
+                        {
+                            action: "getTopics",
+                            key: "0",
+                            value: "0"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                updateTopics(JSON.parse(data));
+                            } else {
+                                errorPopUp("Error getting topics: ", data);
+                            }
+                        });
+            }
+
+            function updateTopics(data) {
+                var content = '';
+                for (var i = 0; i < data.length; i++) {
+                    content += '<tr id=ttr-"' + data[i].name + '"</tr>';
+                    content += '<td>' + data[i].name + '</td>';
+                    content += '<td>' + data[i].topicId + '</td>';
+                    content += '<td>' + data[i].nmgs + '</td>';
+                    content += '<td><button class="link" onclick="deleteTopic(\'' + data[i].name + '\')">Delete</button> &nbsp; &nbsp;';
+                    content += '<button class="link" onclick="topicMessages(\'' + data[i].name + '\')">Messages</button></td>';
+                    content += '</tr>';
+                }
+                $('#topics-table tbody').html(content);
+            }
+
+
+            function createTopic() {
+                var topicName = document.getElementById("create_topic").value;
+                $.post("",
+                        {
+                            action: "createTopic",
+                            key: topicName,
+                            value: "0"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                updateTopics(JSON.parse(data));
+                                console.log("Topic created: " + topicName);
+                            } else {
+                                errorPopUp("Error creating topic:", data);
+                            }
+                        });
+
+                errorPopUp(message);
+            }
 
             function deleteTopic(topicName) {
                 $.post("",
@@ -189,7 +189,7 @@
                             }
                         });
             }
-           
+
             function updateTopics(data) {
                 var content = '';
                 for (var i = 0; i < data.length; i++) {
@@ -202,25 +202,25 @@
                     content += '<button class="link" onclick="topicMessages(\'' + data[i].name + '\')">Messages</button></td>';
                     content += '</tr>';
                 }
-                $('#topics-table tbody').html(content);                
+                $('#topics-table tbody').html(content);
             }
-            
-            function updateInfo(data){
+
+            function updateInfo(data) {
                 $('#cluster-id').html(data.clusterInfo.id);
                 $('#cluster-controller').html(data.broker);
                 $('#cluster-acl').html(data.clusterInfo.aclOperations);
                 var content = '';
                 var d = data.clusterInfo.nodes;
-                for (var i = 0; i <  d.length; i++) {
+                for (var i = 0; i < d.length; i++) {
                     content += '<td>' + d[i].host + '</td>';
                     content += '<td>' + d[i].port + '</td>';
                     content += '<td>' + d[i].id + '</td>';
                     content += '</tr>';
                 }
                 $('#cluster-table tbody').html(content);
-          
+
             }
-            
+
             function errorPopUp() {
                 var message = "";
                 for (var i = 0; i < arguments.length; i++) {
@@ -243,50 +243,47 @@
                     } else {
                         console.error("Can not find div ", allDivs[i]);
                     }
-                } else {
-                    console.log("Can not find div ", allDivs[i]);
                 }
             }
-        }
-
+            
             function show(id) {
                 hideAllContentExcept(id);
             }
 
-        function topicMessages(topicName) {
-            hideAllContentExcept("topicmsg");
-            $.post("",
-                {
-                    action: "topicMessages",
-                    key: topicName,
-                    offset: 0
-                },
-                function (data, status) {
-                    if (status === "success") {
-                        console.log("Topic messages OK: " + topicName);
-                        readMessages(JSON.parse(data));
-                    } else {
-                        console.error("Error getting topic messages");
-                    }
-                });
-        }
-
-        function readMessages(data) {
-            var content = '';
-            for (var i = 0; i < data.length; i++) {
-                content += '<tr>';
-                content += '<td>' + data[i].offset + '</td>';
-                content += '<td>' + data[i].partition + '</td>';
-                content += '<td>' + data[i].timestamp + '</td>';
-                content += '<td>' + data[i].key + '</td>';
-                // TODO: add expanding
-                content += '<td>' + data[i].value + '</td>';
-                // TODO: add delete button?
-                //content+='<td><button class="link" onclick="deleteMessage(\''+data[i].name+'\')">Delete</button> &nbsp; &nbsp;';
-                content += '</tr>';
+            function topicMessages(topicName) {
+                hideAllContentExcept("topicmsg");
+                $.post("",
+                        {
+                            action: "topicMessages",
+                            key: topicName,
+                            offset: 0
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                console.log("Topic messages OK: " + topicName);
+                                readMessages(JSON.parse(data));
+                            } else {
+                                console.error("Error  getting topic messages");
+                            }
+                        });
             }
-            $('#msg-table-body').html(content);
-        }
+
+            function readMessages(data) {
+                var content = '';
+                for (var i = 0; i < data.length; i++) {
+                    content += '<tr>';
+                    content += '<td>' + data[i].offset + '</td>';
+                    content += '<td>' + data[i].partition + '</td>';
+                    content += '<td>' + data[i].timestamp + '</td>';
+                    content += '<td>' + data[i].key + '</td>';
+                    // TODO: add expanding
+                    content += '<td>' + data[i].value + '</td>';
+                    // TODO: add delete button?
+                    //content+='<td><button class="link" onclick="deleteMessage(\''+data[i].name+'\')">Delete</button> &nbsp; &nbsp;';
+                    content += '</tr>';
+                }
+                $('#msg-table-body').html(content);
+            }
 
             $(document).ready(function () {
                 hideAllContentExcept("topics");
@@ -294,185 +291,186 @@
                 getTopics();
             });
 
-    </script>
-</head>
+        </script>
 
-<body>
-<div class="row">
-    <div class="column left" style="background-color:#005fff; color:#ffffff">
-        <h3>Kafka dev UI</h3>
-        <p>
-            <button class="link" onclick="show('topics')">Topics</button>
-        </p>
-        <p>
-            <button class="link" onclick="show('partitions')">Partitions</button>
-        </p>
-        <p>
-            <button class="link" onclick="show('schema')">Schema registry</button>
-        </p>
-        <p>
-            <button class="link" onclick="show('cgroups')">Consumer groups</button>
-        </p>
-        <p>
-            <button class="link" onclick="show('acls')">Access control list</button>
-        </p>
-        <p>
-            <button class="link" onclick="show('nodes')">Cluster Nodes</button>
-        </p>
-    </div>
+    </head>
 
-    <div class="column right" style="background-color:#ffffff;">
-        <nav id="nav-breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Kafka dev UI</a></li>
-                <li class="breadcrumb-item"><a href="#">Topics</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Messages</li>
-            </ol>
-        </nav>
-        <div id="topics">
-            <table class="table" id="topics-table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Topic Name</th>
-                    <th scope="col">Id</th>
-                    <th scope="col">Number of msg</th>
-                    <th scope="col">Control</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <hr>
-            <input type="text" name="key" value="new_topic" id="create_topic">
-            <button class="btn btn-primary btn-sm" onclick="createTopic()">Create topic</button>
-            <hr>
-        </div>
-        <div id="topicmsg">
-            <div id="topic-msg-content" class="card d-flex">
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarPartitionsDropdown" role="button"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Partition
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarPartitionsDropdown">
-                                    <a class="dropdown-item" href="#">All</a>
-                                    <a class="dropdown-item" href="#">Patition 1</a>
-                                    <a class="dropdown-item" href="#">Patition 2</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarOffsetDropdown" role="button"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Offset
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarOffsetDropdown">
-                                    <a class="dropdown-item" href="#">Newest</a>
-                                    <a class="dropdown-item" href="#">Oldest</a>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="d-flex">
-                            <button class="btn my-2 my-sm-0">Publish message</button>
-                            <button class="btn my-2 my-sm-0">Delete messages</button>
-                        </div>
-                    </div>
-                </nav>
-                <table class="table" id="msg-table">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Offset</th>
-                        <th scope="col">Partition</th>
-                        <th scope="col">Timestamp</th>
-                        <th scope="col">Key</th>
-                        <th scope="col">Value</th>
-                    </tr>
-                    </thead>
-                    <tbody id="msg-table-body">
-                    </tbody>
-                </table>
+    <body>
+        <div class="row">
+            <div class="column left" style="background-color:#005fff; color:#ffffff">
+                <h3>Kafka dev UI</h3>
+                <p>
+                    <button class="link" onclick="show('topics')">Topics</button>
+                </p>
+                <p>
+                    <button class="link" onclick="show('partitions')">Partitions</button>
+                </p>
+                <p>
+                    <button class="link" onclick="show('schema')">Schema registry</button>
+                </p>
+                <p>
+                    <button class="link" onclick="show('cgroups')">Consumer groups</button>
+                </p>
+                <p>
+                    <button class="link" onclick="show('acls')">Access control list</button>
+                </p>
+                <p>
+                    <button class="link" onclick="show('nodes')">Cluster Nodes</button>
+                </p>
             </div>
-            <nav class="d-flex justify-content-end" id="msg-pagination">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
-            <div class="modal fade" id="create-msg-modal" tabindex="-1" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">New message to @getbootstrap</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="mb-3">
-                                    <label for="recipient-name" class="col-form-label">Recipient:</label>
-                                    <input type="text" class="form-control" id="recipient-name">
+
+            <div class="column right" style="background-color:#ffffff;">
+                <nav id="nav-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Kafka dev UI</a></li>
+                        <li class="breadcrumb-item"><a href="#">Topics</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Messages</li>
+                    </ol>
+                </nav>
+                <div id="topics">
+                    <table class="table" id="topics-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Topic Name</th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Number of msg</th>
+                                <th scope="col">Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <hr>
+                    <input type="text" name="key" value="new_topic" id="create_topic">
+                    <button class="btn btn-primary btn-sm" onclick="createTopic()">Create topic</button>
+                    <hr>
+                </div>
+                <div id="topicmsg">
+                    <div id="topic-msg-content" class="card d-flex">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <ul class="navbar-nav mr-auto">
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarPartitionsDropdown" role="button"
+                                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Partition
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarPartitionsDropdown">
+                                            <a class="dropdown-item" href="#">All</a>
+                                            <a class="dropdown-item" href="#">Patition 1</a>
+                                            <a class="dropdown-item" href="#">Patition 2</a>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarOffsetDropdown" role="button"
+                                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Offset
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarOffsetDropdown">
+                                            <a class="dropdown-item" href="#">Newest</a>
+                                            <a class="dropdown-item" href="#">Oldest</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="d-flex">
+                                    <button class="btn my-2 my-sm-0">Publish message</button>
+                                    <button class="btn my-2 my-sm-0">Delete messages</button>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="message-text" class="col-form-label">Message:</label>
-                                    <textarea class="form-control" id="message-text"></textarea>
+                            </div>
+                        </nav>
+                        <table class="table" id="msg-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Offset</th>
+                                    <th scope="col">Partition</th>
+                                    <th scope="col">Timestamp</th>
+                                    <th scope="col">Key</th>
+                                    <th scope="col">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="msg-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav class="d-flex justify-content-end" id="msg-pagination">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                    <div class="modal fade" id="create-msg-modal" tabindex="-1" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">New message to @getbootstrap</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Send message</button>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                            <input type="text" class="form-control" id="recipient-name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="message-text" class="col-form-label">Message:</label>
+                                            <textarea class="form-control" id="message-text"></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Send message</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="partitions">
-            Partitions<br>
-            TBD
-        </div>
+                <div id="partitions">
+                    Partitions<br>
+                    TBD
+                </div>
 
-        <div id="schema">
-            Schema<br>
-            TBD
-        </div>
+                <div id="schema">
+                    Schema<br>
+                    TBD
+                </div>
 
-        <div id="cgroups">
-            <table class="table" id="cgropus-table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">State</th>
-                    <th scope="col">Id</th>
-                    <th scope="col">Coordinator</th>
-                    <th scope="col">Protocol</th>
-                    <th scope="col">Members</th>
-                    <th scope="col">Lag(Sum)</th>
-                </tr>
-                </thead>
-                <tbody>
-                {#for item in info:kafkaInfos.consumerGroups}
-                <tr id="ctr-{
+                <div id="cgroups">
+                    <table class="table" id="cgropus-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">State</th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Coordinator</th>
+                                <th scope="col">Protocol</th>
+                                <th scope="col">Members</th>
+                                <th scope="col">Lag(Sum)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#for item in info:kafkaInfos.consumerGroups}
+                            <tr id="ctr-{
                                     item.name
                                 }">
-                    <td>{item.state}</td>
-                    <td>{item.name}</td>
-                    <td>{item.coordinator}</td>
-                    <td>{item.protocol}</td>
-                    <td>{item.members}</td>
-                    <td>{item.lag}</td>
-                </tr>
-                {/for}
-                </tbody>
-            </table>
-        </div>
+                                <td>{item.state}</td>
+                                <td>{item.name}</td>
+                                <td>{item.coordinator}</td>
+                                <td>{item.protocol}</td>
+                                <td>{item.members}</td>
+                                <td>{item.lag}</td>
+                            </tr>
+                            {/for}
+                        </tbody>
+                    </table>
+                </div>
 
-        <div id="acls">
-            ACL<br>
-            TBD
-        </div>
+                <div id="acls">
+                    ACL<br>
+                    TBD
+                </div>
 
                 <div id="nodes">
                     <b>Kafka cluster id:&nbsp;</b><span id="cluster-id"></span><br>
@@ -492,7 +490,7 @@
                     </table>
                 </div>
 
-    </div>
-</div>
-</body>
+            </div>
+        </div>
+    </body>
 </html>
