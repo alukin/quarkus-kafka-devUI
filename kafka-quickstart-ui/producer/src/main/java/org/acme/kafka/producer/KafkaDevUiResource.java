@@ -8,7 +8,6 @@ import io.quarkus.kafka.client.runtime.KafkaAdminClient;
 import io.quarkus.kafka.client.runtime.KafkaWebUiUtils;
 import io.quarkus.vertx.web.Route;
 import io.vertx.core.MultiMap;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -26,7 +25,7 @@ public class KafkaDevUiResource {
     @Inject
     KafkaWebUiUtils webUtils;
     
-//Sume plmumbing code to provide execution environment similar to Dev UI in extension
+//Some plmumbing code to provide execution environment similar to Dev UI in extension
     @Route(methods = Route.HttpMethod.POST, path = "/kafka_ui.html")
     public void handleRoute(RoutingContext event) {
         if (event.getBody() != null) {

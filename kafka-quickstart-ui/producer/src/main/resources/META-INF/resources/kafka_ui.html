@@ -5,10 +5,10 @@
         <title>kafka-devUI</title>
         <link rel="stylesheet" href="/q/dev/resources/css/bootstrap.min.css">
         <link rel="stylesheet" href="/q/dev/resources/fontawesome/css/all.min.css">
-         
+
         <script src="/q/dev/resources/js/jquery.min.js"></script>
         <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
-        
+
         <style>
             * {
                 box-sizing: border-box;
@@ -41,7 +41,7 @@
             }
         </style>
 
-        
+
         <script>
             function createTopic() {
                 var topicName = document.getElementById("create_topic").value;
@@ -56,7 +56,7 @@
                                 updateTopics(JSON.parse(data));
                                 console.log("Topic created: " + topicName);
                             } else {
-                                errorPopUp("Error creating topic:",data);
+                                errorPopUp("Error creating topic:", data);
                             }
                         });
             }
@@ -73,11 +73,11 @@
                                 updateTopics(JSON.parse(data));
                                 console.log("Topic deleted: " + topicName);
                             } else {
-                                errorPopUp("Error deleting topic:",data);
+                                errorPopUp("Error deleting topic:", data);
                             }
                         });
             }
-            
+
             function getTopics() {
                 $.post("",
                         {
@@ -89,33 +89,40 @@
                             if (status === "success") {
                                 updateTopics(JSON.parse(data));
                             } else {
-                                errorPopUp("Error getting topics: ",data);
+                                errorPopUp("Error getting topics: ", data);
                             }
                         });
             }
             
-            function updateTopics(data){
-               var content = ''; 
-               for (var i = 0; i < data.length; i++) {                   
-                   content+='<tr id=ttr-"' + data[i].name + '"</tr>';
-                   content+='<td>'+data[i].name+'</td>';
-                   content+='<td>'+data[i].topicId+'</td>';
-                   content+='<td>'+data[i].nmgs+'</td>';
-                   content+='<td><button class="link" onclick="deleteTopic(\''+data[i].name+'\')">Delete</button> &nbsp; &nbsp;';
-                   content+='<button class="link" onclick="topicMessages(\''+data[i].name+'\')">Messages</button></td>';
-                   content+='</tr>';
-               }
-               $('#topics-table tbody').html(content);
-            }
+            $.fn.redraw = function () {
+                $(this).each(function () {
+                    var redraw = this.offsetHeight;
+                });
+            };
             
-            function errorPopUp(){
-                var message="";
+            function updateTopics(data) {
+                var content = '';
+                for (var i = 0; i < data.length; i++) {
+                    content += '<tr id=ttr-"' + data[i].name + '"</tr>';
+                    content += '<td>' + data[i].name + '</td>';
+                    content += '<td>' + data[i].topicId + '</td>';
+                    content += '<td>' + data[i].nmgs + '</td>';
+                    content += '<td><button class="link" onclick="deleteTopic(\'' + data[i].name + '\')">Delete</button> &nbsp; &nbsp;';
+                    content += '<button class="link" onclick="topicMessages(\'' + data[i].name + '\')">Messages</button></td>';
+                    content += '</tr>';
+                }
+                $('#topics-table tbody').html(content);
+                $('#topics').redraw();
+            }
+
+            function errorPopUp() {
+                var message = "";
                 for (var i = 0; i < arguments.length; i++) {
-                    message+=arguments[i]+" ";
+                    message += arguments[i] + " ";
                 }
                 alert(message);
             }
-            
+
             function hideAllContentExcept(ex) {
                 const allDivs = ["topics", "partitions", "schema", "cgroups", "acls", "nodes", "topicmsg"];
                 for (let i = 0; i < allDivs.length; i++) {
@@ -128,13 +135,13 @@
                             d.style.display = "block";
                         }
                     } else {
-                        console.log("Can not find div ", allDivs[i]);
+                        console.error("Can not find div ", allDivs[i]);
                     }
                 }
             }
 
             function show(id) {
-                hideAllContentExcept(id);               
+                hideAllContentExcept(id);
             }
 
             function topicMessages(topicName) {
@@ -154,7 +161,7 @@
                             }
                         });
             }
-            
+
             $(document).ready(function () {
                 hideAllContentExcept("topics");
                 getTopics();
