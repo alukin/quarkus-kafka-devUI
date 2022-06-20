@@ -41,7 +41,6 @@
             }
         </style>
 
-
         <script>
             function createTopic() {
                 var topicName = document.getElementById("create_topic").value;
@@ -93,17 +92,28 @@
                             }
                         });
             }
-            
-            $.fn.redraw = function () {
-                $(this).each(function () {
-                    var redraw = this.offsetHeight;
-                });
-            };
-            
+
+            function getKafkaInfo() {
+                $.post("",
+                        {
+                            action: "getInfo",
+                            key: "0",
+                            value: "0"
+                        },
+                        function (data, status) {
+                            if (status === "success") {
+                                updateInfo(JSON.parse(data));
+                            } else {
+                                errorPopUp("Error getting Kafka info: ", data);
+                            }
+                        });
+            }
+           
             function updateTopics(data) {
                 var content = '';
                 for (var i = 0; i < data.length; i++) {
-                    content += '<tr id=ttr-"' + data[i].name + '"</tr>';
+                    var d = data[i];
+                    content += '<tr id=ttr-"' + d.name + '"</tr>';
                     content += '<td>' + data[i].name + '</td>';
                     content += '<td>' + data[i].topicId + '</td>';
                     content += '<td>' + data[i].nmgs + '</td>';
@@ -111,10 +121,25 @@
                     content += '<button class="link" onclick="topicMessages(\'' + data[i].name + '\')">Messages</button></td>';
                     content += '</tr>';
                 }
-                $('#topics-table tbody').html(content);
-                $('#topics').redraw();
+                $('#topics-table tbody').html(content);                
             }
-
+            
+            function updateInfo(data){
+                $('#cluster-id').html(data.clusterInfo.id);
+                $('#cluster-controller').html(data.broker);
+                $('#cluster-acl').html(data.clusterInfo.aclOperations);
+                var content = '';
+                var d = data.clusterInfo.nodes;
+                for (var i = 0; i <  d.length; i++) {
+                    content += '<td>' + d[i].host + '</td>';
+                    content += '<td>' + d[i].port + '</td>';
+                    content += '<td>' + d[i].id + '</td>';
+                    content += '</tr>';
+                }
+                $('#cluster-table tbody').html(content);
+          
+            }
+            
             function errorPopUp() {
                 var message = "";
                 for (var i = 0; i < arguments.length; i++) {
@@ -164,6 +189,7 @@
 
             $(document).ready(function () {
                 hideAllContentExcept("topics");
+                getKafkaInfo();
                 getTopics();
             });
 
@@ -267,26 +293,19 @@
                 </div>
 
                 <div id="nodes">
-                    <b>Kafka cluster id:</b> {info:kafkaInfos.clusterInfo.id} <br> 
-                    <b>Cluster controller node:</b> {info:kafkaInfos.clusterInfo.controller.host}:{info:kafkaInfos.clusterInfo.controller.port} <br>
-                    <b>ACL operations:</b> {info:kafkaInfos.clusterInfo.aclOperations}
+                    <b>Kafka cluster id:&nbsp;</b><span id="cluster-id"></span><br>
+                    <b>Controller node (broker):&nbsp;</b><span id="cluster-controller"></span><br>
+                    <b>ACL operations:&nbsp;</b><span id="cluster-acl"></span><br>
                     <h3>Cluster nodes</h3>
                     <table class="table" id="cluster-table">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">Id</th>
-                                <th scope="col">host</th>
-                                <th scope="col">port</th>
+                                <th scope="col">Host</th>
+                                <th scope="col">Port</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {#for item in info:kafkaInfos.clusterInfo.nodes} 
-                            <tr>
-                                <td>{item.id}</td>
-                                <td>{item.host}</td>
-                                <td>{item.port}</td>
-                            </tr>
-                            {/for}
                         </tbody>
                     </table>
                 </div>
