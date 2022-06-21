@@ -66,75 +66,88 @@
         </style>
 
         <script>
-            function createTopic() {
-                var topicName = document.getElementById("create_topic").value;
-                $.post("",
-                    {
-                        action: "createTopic",
-                        key: topicName,
-                        value: "0"
-                    },
-                    function (data, status) {
-                        if (status === "success") {
-                            updateTopics(JSON.parse(data));
-                            console.log("Topic created: " + topicName);
-                        } else {
-                            errorPopUp("Error creating topic:", data);
-                        }
-                    });
+            function doPost(data, successCallback, errorCallback) {
+                $.ajax({
+                    url: 'kafka-admin',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    success: successCallback,
+                    error: errorCallback
+                });
+            }
 
-                errorPopUp(message);
+            function createTopic() {
+                const topicName = document.getElementById("create_topic").value;
+                const req = {
+                    action: "createTopic",
+                        key: topicName,
+                    value: "0",
+                    test: "1"
+                };
+                doPost(req,
+                    function (data) {
+                        updateTopics(JSON.parse(data));
+                        console.log("Topic created: " + topicName);
+                    },
+                    function (data) {
+                        errorPopUp("Error creating topic:", data);
+                    }
+                )
             }
 
             function deleteTopic(topicName) {
-                $.post("",
-                    {
-                        action: "deleteTopic",
-                        key: topicName,
-                        value: "0"
+                var req = {
+                    action: "deleteTopic",
+                    key: topicName,
+                    value: "0"
+                };
+                doPost(req,
+                    function (data) {
+                        updateTopics(JSON.parse(data));
+                        console.log("Topic deleted: " + topicName);
+
                     },
-                    function (data, status) {
-                        if (status === "success") {
-                            updateTopics(JSON.parse(data));
-                            console.log("Topic deleted: " + topicName);
-                        } else {
-                            errorPopUp("Error deleting topic:", data);
-                        }
-                    });
+                    function (data) {
+                        errorPopUp("Error deleting topic:", data);
+
+                    }
+                );
             }
 
             function getTopics() {
-                $.post("",
-                    {
-                        action: "getTopics",
-                        key: "0",
-                        value: "0"
+                var req = {
+                    action: "getTopics",
+                    key: "0",
+                    value: "0"
+                };
+                doPost(req,
+                    function (data) {
+                        updateTopics(JSON.parse(data));
                     },
-                    function (data, status) {
-                        if (status === "success") {
-                            updateTopics(JSON.parse(data));
-                        } else {
-                            errorPopUp("Error getting topics: ", data);
-                        }
-                    });
+                    function (data) {
+                        errorPopUp("Error getting topics: ", data);
+                    }
+                );
             }
 
             function getKafkaInfo() {
-                $.post("",
-                    {
-                        action: "getInfo",
-                        key: "0",
-                        value: "0"
+                const req = {
+                    action: "getInfo",
+                    key: "0",
+                    value: "0"
+                };
+                doPost(req,
+                    function (data) {
+                        const d = JSON.parse(data);
+                        updateInfo(d);
+                        updateConsumerGroups(d.consumerGroups);
                     },
-                    function (data, status) {
-                        if (status === "success") {
-                            var d = JSON.parse(data);
-                            updateInfo(d);
-                            updateConsumerGroups(d.consumerGroups);
-                        } else {
-                            errorPopUp("Error getting Kafka info: ", data);
-                        }
-                    });
+                    function (data) {
+                        errorPopUp("Error getting Kafka info: ", data);
+                    }
+                );
             }
 
             function updateTopics(data) {
@@ -171,6 +184,7 @@
 
             function updateConsumerGroups(data) {
                 var content = '';
+                // TODO: replace with JQuery to avoid possible attacks.
                 for (var i = 0; i < data.length; i++) {
                     content += '<tr>';
                     content += '<td>' + data[i].state + '</td>';
@@ -218,20 +232,21 @@
                 window.currentContext = {
                     topicName: topicName
                 };
-                $.post("",
-                    {
-                        action: "topicMessages",
-                        key: topicName,
-                        offset: 0
+
+                const req = {
+                    action: "topicMessages",
+                    key: topicName,
+                    offset: 0
+                };
+                doPost(req,
+                    function (data) {
+                    console.log("Topic messages OK: " + topicName);
+                        readMessages(JSON.parse(data));
                     },
-                    function (data, status) {
-                        if (status === "success") {
-                            console.log("Topic messages OK: " + topicName);
-                            readMessages(JSON.parse(data));
-                        } else {
-                            console.error("Error  getting topic messages");
-                        }
-                    });
+                    function (data) {
+                        console.error("Error  getting topic messages");
+                    }
+                );
             }
 
             function readMessages(data) {
@@ -253,22 +268,7 @@
 
             function createMessage() {
                 const topicName = currentContext.topicName;
-
-
-                $.post("",
-                    {
-                        action: "createTopic",
-                        key: topicName,
-                        value: "0"
-                    },
-                    function (data, status) {
-                        if (status === "success") {
-                            updateTopics(JSON.parse(data));
-                            console.log("Topic created: " + topicName);
-                        } else {
-                            errorPopUp("Error creating topic:", data);
-                        }
-                    });
+                //TODO
             }
 
             $(document).ready(function () {
@@ -551,18 +551,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {#for item in info:kafkaInfos.consumerGroups}
-                    <tr id="ctr-{
-                                    item.name
-                                }">
-                        <td>{item.state}</td>
-                        <td>{item.name}</td>
-                        <td>{item.coordinator}</td>
-                        <td>{item.protocol}</td>
-                        <td>{item.members}</td>
-                        <td>{item.lag}</td>
-                    </tr>
-                    {/for}
                     </tbody>
                 </table>
             </div>

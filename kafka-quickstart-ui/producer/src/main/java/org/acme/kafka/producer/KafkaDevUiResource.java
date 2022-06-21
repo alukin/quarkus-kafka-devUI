@@ -6,6 +6,7 @@ import io.quarkus.kafka.client.runtime.KafkaAdminClient;
 import io.quarkus.kafka.client.runtime.KafkaTopicClient;
 import io.quarkus.kafka.client.runtime.KafkaWebUiUtils;
 import io.quarkus.kafka.client.runtime.devconsole.model.Order;
+import io.quarkus.vertx.web.ReactiveRoutes;
 import io.quarkus.vertx.web.Route;
 import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
@@ -33,7 +34,7 @@ public class KafkaDevUiResource {
     KafkaWebUiUtils webUtils;
 
     //Sume plmumbing code to provide execution environment similar to Dev UI in extension
-    @Route(methods = Route.HttpMethod.POST, path = "/kafka_ui.html")
+    @Route(methods = Route.HttpMethod.POST, path = "/kafka-admin", consumes = ReactiveRoutes.APPLICATION_JSON, produces = ReactiveRoutes.APPLICATION_JSON )
     public void handleRoute(RoutingContext event) {
         if (event.getBody() != null) {
             String data = event.getBodyAsString();
