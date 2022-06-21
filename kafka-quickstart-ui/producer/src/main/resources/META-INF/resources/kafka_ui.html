@@ -78,17 +78,24 @@
                 });
             }
 
+            class Page {
+                constructor(size, page) {
+                    this.size = size;
+                    this.page = page;
+                }
+            }
+
             function createTopic() {
                 const topicName = document.getElementById("create_topic").value;
                 const req = {
                     action: "createTopic",
-                        key: topicName,
+                    key: topicName,
                     value: "0",
                     test: "1"
                 };
                 doPost(req,
                     function (data) {
-                        updateTopics(JSON.parse(data));
+                        updateTopics(data);
                         console.log("Topic created: " + topicName);
                     },
                     function (data) {
@@ -105,7 +112,7 @@
                 };
                 doPost(req,
                     function (data) {
-                        updateTopics(JSON.parse(data));
+                        updateTopics(data);
                         console.log("Topic deleted: " + topicName);
 
                     },
@@ -124,7 +131,7 @@
                 };
                 doPost(req,
                     function (data) {
-                        updateTopics(JSON.parse(data));
+                        updateTopics(data);
                     },
                     function (data) {
                         errorPopUp("Error getting topics: ", data);
@@ -140,9 +147,8 @@
                 };
                 doPost(req,
                     function (data) {
-                        const d = JSON.parse(data);
-                        updateInfo(d);
-                        updateConsumerGroups(d.consumerGroups);
+                        updateInfo(data);
+                        updateConsumerGroups(data.consumerGroups);
                     },
                     function (data) {
                         errorPopUp("Error getting Kafka info: ", data);
@@ -240,8 +246,8 @@
                 };
                 doPost(req,
                     function (data) {
-                    console.log("Topic messages OK: " + topicName);
-                        readMessages(JSON.parse(data));
+                        console.log("Topic messages OK: " + topicName);
+                        readMessages(data);
                     },
                     function (data) {
                         console.error("Error  getting topic messages");
@@ -255,6 +261,7 @@
                     content += '<tr>';
                     content += '<td>' + data[i].offset + '</td>';
                     content += '<td>' + data[i].partition + '</td>';
+                    // FIXME: display as date
                     content += '<td>' + data[i].timestamp + '</td>';
                     content += '<td>' + data[i].key + '</td>';
                     // TODO: add expanding
@@ -268,7 +275,30 @@
 
             function createMessage() {
                 const topicName = currentContext.topicName;
-                //TODO
+                let partition = $('#partitionSelect').val();
+                if (partition === 'all') partition = null;
+
+                const rq = {
+                    action: "createMessage",
+                    topic: topicName,
+                    partition: partition,
+                    value: $('#msg-value-textarea').val(),
+                    key: $('#msg-key-textarea').val()
+                };
+
+                doPost(rq,
+                    function (data) {
+                        //TODO: add hot reload
+                    },
+                    function (data) {
+                        //failure
+                    }
+                );
+
+                $('#create-msg-modal').modal('hide');
+                $('#msg-value-textarea').val("");
+                $('#msg-key-textarea').val("");
+                // TODO: make active headers tab
             }
 
             $(document).ready(function () {
@@ -276,6 +306,20 @@
                 getKafkaInfo();
                 getTopics();
             });
+
+            function addHeader() {
+
+            }
+
+            function deleteHeader(id) {
+                $("#" + id).remove();
+
+            }
+
+            // TODO: validate header before submitting message
+            function validateHeader() {
+
+            }
 
         </script>
 
@@ -313,14 +357,6 @@
                                         <option value="2">1</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label class="form-check-label" for="typeSelect">Type</label>
-                                    <select class="form-select" id="typeSelect">
-                                        <option value="text">Text</option>
-                                        <option value="json" selected>JSON</option>
-                                        <option value="binary">Binary (base64)</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
 
@@ -345,7 +381,6 @@
                             </li>
                         </ul>
 
-
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="headers-list-tab-pane" role="tabpanel"
                                  aria-labelledby="headers-list-tab" tabindex="0">
@@ -354,7 +389,7 @@
                                     <input type="text" class="form-control" placeholder="Key"/>
                                     <input type="text" class="form-control" placeholder="Value"/>
                                     <span class="input-group-text" id="basic-addon1">
-            <svg
+                                      <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
                     height="16"
@@ -370,26 +405,26 @@
                       d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
               ></path>
             </svg>
-          </span>
+                                    </span>
                                 </div>
                                 <div class="d-flex justify-content-end top-margin">
-                                    <button type="button" class="btn btn-light">Add</button>
+                                    <button type="button" class="btn btn-light" onclick="addHeader()">Add</button>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="header-key-tab-pane" role="tabpanel"
                                  aria-labelledby="header-key-tab" tabindex="0">
                                 <div class="form-floating top-margin">
                                     <textarea class="form-control" placeholder="Key"
-                                              id="header-key-textarea"></textarea>
-                                    <label for="header-key-textarea">Key</label>
+                                              id="msg-key-textarea"></textarea>
+                                    <label for="msg-key-textarea">Key</label>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="header-value-tab-pane" role="tabpanel"
                                  aria-labelledby="header-value-tab" tabindex="0">
                                 <div class="form-floating top-margin">
                                     <textarea class="form-control" placeholder="Value"
-                                              id="header-value-textarea"></textarea>
-                                    <label for="header-value-textarea">Value</label>
+                                              id="msg-value-textarea"></textarea>
+                                    <label for="msg-value-textarea">Value</label>
                                 </div>
                             </div>
                         </div>
@@ -403,7 +438,8 @@
                         >
                             Close
                         </button>
-                        <button type="button" class="btn btn-primary">Send</button>
+                        <!-- FIXME: fade and clear after message submission; search for bootstrap function -->
+                        <button type="button" class="btn btn-primary" onclick="createMessage()">Send</button>
                     </div>
                 </div>
             </div>

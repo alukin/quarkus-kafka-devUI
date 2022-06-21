@@ -1,21 +1,20 @@
 package org.acme.kafka.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
 import io.quarkus.kafka.client.runtime.KafkaTopicClient;
 import io.quarkus.kafka.client.runtime.KafkaWebUiUtils;
+import io.quarkus.kafka.client.runtime.devconsole.model.KafkaMessageCreateRequest;
 import io.quarkus.kafka.client.runtime.devconsole.model.Order;
 import io.quarkus.vertx.web.ReactiveRoutes;
 import io.quarkus.vertx.web.Route;
-import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -34,28 +33,16 @@ public class KafkaDevUiResource {
     KafkaWebUiUtils webUtils;
 
     //Sume plmumbing code to provide execution environment similar to Dev UI in extension
-    @Route(methods = Route.HttpMethod.POST, path = "/kafka-admin", consumes = ReactiveRoutes.APPLICATION_JSON, produces = ReactiveRoutes.APPLICATION_JSON )
+    @Route(methods = Route.HttpMethod.POST, path = "/kafka-admin", consumes = ReactiveRoutes.APPLICATION_JSON, produces = ReactiveRoutes.APPLICATION_JSON)
     public void handleRoute(RoutingContext event) {
         if (event.getBody() != null) {
-            String data = event.getBodyAsString();
-            String[] parts = data.split("&");
-            MultiMap post = MultiMap.caseInsensitiveMultiMap();
-            for (String i : parts) {
-                String[] pair = i.split("=");
-                try {
-                    post.add(URLDecoder.decode(pair[0], StandardCharsets.UTF_8.name()),
-                            URLDecoder.decode(pair[1], StandardCharsets.UTF_8.name()));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            dispatch(event, post);
+            dispatch(event);
         }
     }
 
-    protected void dispatch(RoutingContext event, MultiMap form) {
+    protected void dispatch(RoutingContext event) {
         try {
-            handlePost(event, form);
+            handlePost(event);
             actionSuccess(event);
         } catch (Exception e) {
             event.fail(e);
@@ -71,11 +58,12 @@ public class KafkaDevUiResource {
     }
 
     //This is method that could be copy-patsted to the extension KafkaDevConsoleRecorder.java
-    public void handlePost(RoutingContext event, MultiMap form) {
+    public void handlePost(RoutingContext event) {
 
-        String action = form.get("action");
-        String key = form.get("key");
-        String value = form.get("value");
+        var body = event.getBodyAsJson();
+        String action = body.getString("action");
+        String key = body.getString("key");
+        String value = body.getString("value");
         String message = "OK";
 
         boolean res = true;
@@ -101,6 +89,11 @@ public class KafkaDevUiResource {
                     case "topicMessages":
                         message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(0), 0L, 10L));
                         break;
+                    case "createMessage":
+                        var mapper = new JsonMapper();
+                        var rq = mapper.readValue(event.getBodyAsString(), KafkaMessageCreateRequest.class);
+                        webUtils.createMessage(rq);
+                        break;
                     default:
                         res = false;
                         break;
@@ -109,6 +102,8 @@ public class KafkaDevUiResource {
                 Thread.currentThread().interrupt();
             } catch (ExecutionException ex) {
                 LOGGER.error(ex);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
         }
 
