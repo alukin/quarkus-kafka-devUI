@@ -239,10 +239,13 @@
                     topicName: topicName
                 };
 
+                let partition = $("#partition-select option:selected").val();
+                if (partition === 'all') partition = null;
                 const req = {
                     action: "topicMessages",
                     key: topicName,
-                    offset: 0
+                    offset: 0,
+                    partition: partition
                 };
                 doPost(req,
                     function (data) {
@@ -275,8 +278,8 @@
 
             function createMessage() {
                 const topicName = currentContext.topicName;
-                let partition = $('#partitionSelect').val();
-                if (partition === 'all') partition = null;
+                let partition = $('#partition-select option:selected').val();
+                if (partition === 'any') partition = null;
 
                 const rq = {
                     action: "createMessage",
@@ -305,6 +308,18 @@
                 hideAllContentExcept("topics");
                 getKafkaInfo();
                 getTopics();
+
+                $("#publish-msg-modal-btn").click(function () {
+                    const modal = new bootstrap.Modal('#create-msg-modal');
+                    modal.show();
+                    createPartitionsDropdown();
+                });
+
+                $('#send-msg-btn').click(function () {
+                    const modal = new bootstrap.Modal('#create-msg-modal');
+                    modal.hide();
+                    topicMessages(currentContext.topicName);
+                });
             });
 
             function addHeader() {
@@ -319,6 +334,40 @@
             // TODO: validate header before submitting message
             function validateHeader() {
 
+            }
+
+            function createPartitionsDropdown() {
+                const topicName = currentContext.topicName;
+
+                var rq = {
+                    action: "getPartitions",
+                    topicName: topicName
+                };
+
+                doPost(rq,
+                    function (data) {
+                        let partitionObject = $('#partition-select');
+                        partitionObject.empty();
+
+                        partitionObject.append(
+                            $("<option/>", {
+                                value: "any",
+                                text: "Any"
+                            }).attr("selected", "selected")
+                        );
+                        for (let partition of data) {
+                            partitionObject.append(
+                                $("<option/>", {
+                                    value: partition,
+                                    text: partition
+                                })
+                            );
+                        }
+                    },
+                    function (data) {
+                        errorPopUp("no partitions");
+                    }
+                );
             }
 
         </script>
@@ -338,11 +387,11 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Create message</h5>
+                        <h5 class="modal-title">Create message</h5>
                         <button
                                 type="button"
                                 class="btn-close"
-                                data-bs-dismiss="modal"
+
                                 aria-label="Close"
                         ></button>
                     </div>
@@ -350,11 +399,9 @@
                         <div>
                             <div class="collapse navbar-collapse d-flex justify-content-start" id="messageFilters">
                                 <div class="right-margin">
-                                    <label class="form-check-label" for="partitionSelect">Partition</label>
-                                    <select class="form-select" id="partitionSelect">
+                                    <label class="form-check-label" for="partition-select">Partition</label>
+                                    <select class="form-select" id="partition-select">
                                         <option value="all" selected>All</option>
-                                        <option value="1">0</option>
-                                        <option value="2">1</option>
                                     </select>
                                 </div>
                             </div>
@@ -390,13 +437,13 @@
                                     <input type="text" class="form-control" placeholder="Value"/>
                                     <span class="input-group-text" id="basic-addon1">
                                       <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    class="bi bi-trash"
-                    viewBox="0 0 16 16"
-            >
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="16"
+                                              height="16"
+                                              fill="currentColor"
+                                              class="bi bi-trash"
+                                              viewBox="0 0 16 16"
+                                      >
               <path
                       d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
               ></path>
@@ -439,7 +486,8 @@
                             Close
                         </button>
                         <!-- FIXME: fade and clear after message submission; search for bootstrap function -->
-                        <button type="button" class="btn btn-primary" onclick="createMessage()">Send</button>
+                        <button type="button" class="btn btn-primary" id="send-msg-btn" onclick="createMessage()">Send
+                        </button>
                     </div>
                 </div>
             </div>
@@ -528,9 +576,10 @@
                             <div class="d-flex">
                                 <button class="btn my-2 my-sm-0"
                                         type="button"
-                                        data-bs-toggle="modal"
                                         data-bs-target="#create-msg-modal"
-                                        data-bs-whatever="@mdo">
+                                        data-bs-whatever="@mdo"
+                                        id="publish-msg-modal-btn"
+                                >
                                     Publish message
                                 </button>
                                 <button class="btn my-2 my-sm-0">

@@ -87,12 +87,17 @@ public class KafkaDevUiResource {
                         message = webUtils.toJson(webUtils.getTopics());
                         break;
                     case "topicMessages":
-                        message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(0), 0L, 10L));
+                        body.getInteger("");
+                        message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(), 0L, 10L));
                         break;
                     case "createMessage":
                         var mapper = new JsonMapper();
                         var rq = mapper.readValue(event.getBodyAsString(), KafkaMessageCreateRequest.class);
                         webUtils.createMessage(rq);
+                        break;
+                    case "getPartitions":
+                        var topicName = body.getString("topicName");
+                        message = webUtils.toJson(webUtils.partitions(topicName));
                         break;
                     default:
                         res = false;
