@@ -23,10 +23,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 public class KafkaDevUiResource {
     private static final Logger LOGGER = Logger.getLogger(KafkaDevUiResource.class);
-
     @Inject
     KafkaAdminClient adminClient;
-
     @Inject
     KafkaTopicClient topicClient;
     @Inject
@@ -94,6 +92,7 @@ public class KafkaDevUiResource {
                         var mapper = new JsonMapper();
                         var rq = mapper.readValue(event.getBodyAsString(), KafkaMessageCreateRequest.class);
                         webUtils.createMessage(rq);
+                        message = "{}";
                         break;
                     case "getPartitions":
                         var topicName = body.getString("topicName");
