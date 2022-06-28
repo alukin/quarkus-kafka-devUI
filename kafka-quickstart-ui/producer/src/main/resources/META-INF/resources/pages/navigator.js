@@ -6,10 +6,15 @@ import ConsumerGroupPage from "./consumerGroupPage.js";
 import AccessControlListPage from "./accessControlListPage.js";
 import NodesPage from "./nodesPage.js";
 
-//FIXME
-const pages = {
-    TOPICS_PAGE: "topics-page",
-
+export const pages = {
+    TOPICS: "topics-page",
+    PARTITIONS: "partitions-page",
+    SCHEMA: "schema-page",
+    CONSUMER_GROUPS: "consumer-groups-page",
+    ACCESS_CONTROL_LIST: "access-control-list-page",
+    NODES: "nodes-page",
+    TOPIC_MESSAGES: "topic-messages-page",
+    DEFAULT: "topics-page"
 }
 
 export default class Navigator {
@@ -18,40 +23,41 @@ export default class Navigator {
     }
 
     allPages = {
-        "topics-page": {
+        [pages.TOPICS]: {
             header: "Topics",
             showInNavbar: true,
-            instance: new TopicsPage(this, "topic-page")
+            instance: new TopicsPage(this, pages.TOPICS)
         },
-        "partitions-page": {
+        [pages.PARTITIONS]: {
             header: "Partitions",
             showInNavbar: true,
-            instance: new PartitionsPage("partitions-page")
+            instance: new PartitionsPage(pages.PARTITIONS)
         },
-        "schema-page": {
+        [pages.SCHEMA]: {
             header: "Schema registry",
             showInNavbar: true,
-            instance: new SchemaPage("schema-page")
+            instance: new SchemaPage(pages.SCHEMA)
         },
-        "consumer-groups-page": {
+        [pages.CONSUMER_GROUPS]: {
             header: "Consumer groups",
             showInNavbar: true,
-            instance: new ConsumerGroupPage("consumer-groups-page")
+            instance: new ConsumerGroupPage(pages.CONSUMER_GROUPS)
         },
-        "access-control-list-page": {
+        [pages.ACCESS_CONTROL_LIST]: {
             header: "Access control list",
             showInNavbar: true,
-            instance: new AccessControlListPage("access-control-list-page")
+            instance: new AccessControlListPage(pages.ACCESS_CONTROL_LIST)
         },
-        "nodes-page": {
+        [pages.NODES]: {
             header: "Nodes",
             showInNavbar: true,
-            instance: new NodesPage("nodes-page")
+            instance: new NodesPage(pages.NODES)
         },
-        "topic-messages-page": {
-            header: "Topics",
+        [pages.TOPIC_MESSAGES]: {
+            header: "Messages",
             showInNavbar: false,
-            instance: new MessagesPage("topic-messages-page")
+            instance: new MessagesPage(pages.TOPIC_MESSAGES),
+            parent: pages.TOPICS
         }
     };
 
@@ -101,10 +107,12 @@ export default class Navigator {
                 console.error("Can not find page div: ", keys[i]);
             }
         }
+
+        this.navigateBreadcrumb(requestedPage, params);
     }
 
     navigateToDefaultPage() {
-        this.navigateTo("topics-page");
+        this.navigateTo(pages.DEFAULT);
     }
 
     open(pageId, params) {
@@ -112,7 +120,46 @@ export default class Navigator {
         value.instance.open(params);
     }
 
-    navigateBreadcrumb() {
-        //TODO:
+    navigateBreadcrumb(page, params) {
+        const breadcrumb = $("#nav-breadcrumb");
+        breadcrumb.empty();
+
+        let nextPage = this.allPages[page];
+        let pageId = page;
+
+        let i = 0;
+        while (nextPage !== undefined) {
+            let li;
+            // We only need to append possible params to the very first element.
+            if (i === 0) {
+                li = this.createBreadcrumbItem(nextPage.header, pageId, true, params);
+            } else {
+                li = this.createBreadcrumbItem(nextPage.header, pageId, false);
+            }
+            breadcrumb.prepend(li);
+            pageId = nextPage.parent;
+            nextPage = this.allPages[pageId];
+            i++;
+        }
+
+        const rootLi = this.createBreadcrumbItem("Kafka dev UI", pages.DEFAULT, params);
+        breadcrumb.prepend(rootLi);
+    }
+
+    createBreadcrumbItem(text, pageId, isActive, params) {
+        let breadcrumbText = text;
+        if (params !== undefined && params.length > 0 && (params[0] !== null && params[0] !== undefined)) {
+            breadcrumbText = text + " (" + params[0] + ")";
+        }
+        const a = $("<a/>", {href: "#", text: breadcrumbText})
+            .click(() => this.navigateTo(pageId, params));
+        if (isActive) {
+            a.addClass("active");
+        }
+
+        const li = $("<li/>")
+            .addClass("breadcrumb-item");
+        li.append(a);
+        return li;
     }
 }

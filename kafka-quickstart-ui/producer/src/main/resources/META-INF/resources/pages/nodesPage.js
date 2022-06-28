@@ -8,4 +8,9 @@ export default class NodesPage{
         });
     }
 
+    // TODO: stub. must be implemented by all pages
+    open(){
+
+    }
+
 }

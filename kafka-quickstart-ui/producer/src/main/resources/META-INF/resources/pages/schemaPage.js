@@ -8,4 +8,9 @@ export default class SchemaPage{
         });
     }
 
+    // TODO: stub. must be implemented by all pages
+    open(){
+
+    }
+
 }

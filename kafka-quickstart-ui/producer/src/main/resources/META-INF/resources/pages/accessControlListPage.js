@@ -8,4 +8,8 @@ export default class AccessControlListPage{
         });
     }
 
+    // TODO: stub. must be implemented by all pages
+    open(){
+
+    }
 }

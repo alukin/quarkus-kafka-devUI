@@ -1,5 +1,6 @@
 import {doPost, errorPopUp} from "../web/web.js";
 import {createPrimaryBtn, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
+import {pages} from "./navigator.js";
 
 export default class TopicsPage {
     constructor(navigator, containerId) {
@@ -42,13 +43,13 @@ export default class TopicsPage {
             let d = data[i];
             tableRow.append(createTableItem(d.name));
             tableRow.append(createTableItem(d.topicId));
-            tableRow.append(createTableItem(d.nmgs));
+            tableRow.append(createTableItem(("" + d.nmsg)));
 
             let deleteBtn = createPrimaryBtn("Delete", () => {
                 this.deleteTopic(d.name, this.onTopicsLoaded, this.onTopicsFailed)
             });
             let messagesBtn = createPrimaryBtn("Messages", () => {
-                self.navigator.navigateTo("topic-messages-page", [d.name]);
+                self.navigator.navigateTo(pages.TOPIC_MESSAGES, [d.name]);
             });
             const controlHolder = $("<div/>")
                 .append(messagesBtn)
