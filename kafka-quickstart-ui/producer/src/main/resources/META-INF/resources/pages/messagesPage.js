@@ -2,6 +2,8 @@ import {doPost, errorPopUp} from "../web/web.js";
 import timestampToFormattedString from "../util/datetimeUtil.js";
 import {createTableItem} from "../util/contentManagement.js";
 
+const MODAL_KEY_TAB = "header-key-tab-pane";
+
 export default class MessagesPage {
     constructor(containerId) {
         this.containerId = containerId;
@@ -15,11 +17,16 @@ export default class MessagesPage {
 
     registerButtonHandlers() {
         $("#publish-msg-modal-btn").click(() => {
-            const modal = new bootstrap.Modal('#create-msg-modal');
-            modal.show();
+            $('#create-msg-modal').modal('show');
+            this.setActiveTab(MODAL_KEY_TAB);
         });
 
         $('#send-msg-btn').click(this.createMessage.bind(this));
+
+        $('.close-modal-btn').click(()=>{
+            $('#create-msg-modal').modal('hide');
+            this.setActiveTab(MODAL_KEY_TAB);
+        });
     }
 
     open(params) {
@@ -112,6 +119,10 @@ export default class MessagesPage {
         });
     }
 
+    setActiveTab(tab) {
+        $('.nav-tabs button[href="#' + tab + '"]').click();
+    };
+
     createMessage() {
         this.requestCreateMessage();
 
@@ -123,8 +134,7 @@ export default class MessagesPage {
         $('body').removeClass('modal-open');
         $('.modal-backdrop').remove();
 
-        const modal = new bootstrap.Modal('#create-msg-modal');
-        modal.hide();
         // TODO: make active value tab
+        this.setActiveTab(MODAL_KEY_TAB);
     }
 }

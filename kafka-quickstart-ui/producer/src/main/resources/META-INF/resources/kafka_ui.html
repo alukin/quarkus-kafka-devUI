@@ -5,15 +5,6 @@
         <title>kafka-devUI</title>
         <link rel="stylesheet" href="/q/dev/resources/css/bootstrap.min.css">
         <link rel="stylesheet" href="/q/dev/resources/fontawesome/css/all.min.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-              integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
-              crossorigin="anonymous">
-
-
-        <script src="/q/dev/resources/js/jquery.min.js"></script>
-        <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
-        <!-- need bootstrap 5 version for navbar -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 
         <style>
             html {
@@ -78,9 +69,8 @@
                     <div class="modal-header">
                         <h5 class="modal-title">Create message</h5>
                         <button
+                                class="close-modal-btn btn fa fa-close"
                                 type="button"
-                                class="btn-close"
-
                                 aria-label="Close"
                         ></button>
                     </div>
@@ -88,38 +78,51 @@
                         <div>
                             <div class="collapse navbar-collapse d-flex justify-content-start" id="messageFilters">
                                 <div class="right-margin">
-                                    <label class="form-check-label" for="partition-select">Partition</label>
-                                    <select class="form-select" id="partition-select">
+                                    <select class="custom-select" id="partition-select">
                                         <option value="all" selected>All</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
 
-                        <ul class="nav nav-tabs top-margin" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="headers-list-tab" data-bs-toggle="tab"
-                                        data-bs-target="#headers-list-tab-pane" type="button" role="tab"
-                                        aria-controls="headers-list-tab-pane" aria-selected="true">Headers
+                        <ul class="nav nav-tabs top-margin" role="tablist">
+                            <li class="nav-item waves-effect waves-light">
+                                <button class="nav-link active" id="header-key-tab" data-toggle="tab"
+                                        href="#header-key-tab-pane" type="button" role="tab"
+                                        aria-controls="header-key-tab-pane" aria-selected="true">Key
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="header-key-tab" data-bs-toggle="tab"
-                                        data-bs-target="#header-key-tab-pane" type="button" role="tab"
-                                        aria-controls="header-key-tab-pane" aria-selected="false">Key
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="header-value-tab" data-bs-toggle="tab"
-                                        data-bs-target="#header-value-tab-pane" type="button" role="tab"
+                            <li class="nav-item waves-effect waves-light">
+                                <button class="nav-link" id="header-value-tab" data-toggle="tab"
+                                        href="#header-value-tab-pane" type="button" role="tab"
                                         aria-controls="header-value-tab-pane" aria-selected="false">Value
+                                </button>
+                            </li>
+                            <li class="nav-item waves-effect waves-light">
+                                <button class="nav-link" id="headers-list-tab" data-toggle="tab"
+                                        href="#headers-list-tab-pane" type="button" role="tab"
+                                        aria-controls="headers-list-tab-pane" aria-selected="false">Headers
                                 </button>
                             </li>
                         </ul>
 
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="headers-list-tab-pane" role="tabpanel"
-                                 aria-labelledby="headers-list-tab" tabindex="0">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="header-key-tab-pane" role="tabpanel"
+                                 aria-labelledby="header-key-tab">
+                                <div class="form-floating top-margin">
+                                    <textarea class="form-control" placeholder="Key"
+                                              id="msg-key-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="header-value-tab-pane" role="tabpanel"
+                                 aria-labelledby="header-value-tab">
+                                <div class="form-floating top-margin">
+                                    <textarea class="form-control" placeholder="Value"
+                                              id="msg-value-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="headers-list-tab-pane" role="tabpanel"
+                                 aria-labelledby="headers-list-tab">
                                 <div class="input-group top-margin">
                                     <span class="input-group-text">1.</span>
                                     <input type="text" class="form-control" placeholder="Key"/>
@@ -147,32 +150,15 @@
                                     <button type="button" class="btn btn-light" id="add-header-btn">Add</button>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="header-key-tab-pane" role="tabpanel"
-                                 aria-labelledby="header-key-tab" tabindex="0">
-                                <div class="form-floating top-margin">
-                                    <textarea class="form-control" placeholder="Key"
-                                              id="msg-key-textarea"></textarea>
-                                    <label for="msg-key-textarea">Key</label>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="header-value-tab-pane" role="tabpanel"
-                                 aria-labelledby="header-value-tab" tabindex="0">
-                                <div class="form-floating top-margin">
-                                    <textarea class="form-control" placeholder="Value"
-                                              id="msg-value-textarea"></textarea>
-                                    <label for="msg-value-textarea">Value</label>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
                     <div class="modal-footer">
                         <button
                                 type="button"
-                                class="btn btn-secondary"
+                                class="btn btn-secondary close-modal-btn"
                                 data-bs-dismiss="modal"
-                        >
-                            Close
+                        >Close
                         </button>
                         <button type="button" class="btn btn-primary" id="send-msg-btn">Send
                         </button>
@@ -192,51 +178,44 @@
                 </ol>
             </nav>
             <div id="topics-page">
-                <table class="table" id="topics-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Topic Name</th>
-                            <th scope="col">Id</th>
-                            <th scope="col">Number of msg</th>
-                            <th scope="col">Control</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <hr>
-                <div class="input-group mb-3">
-                    <input type="text" name="key" id="create_topic" class="form-control" placeholder="Topic name"
-                           aria-label="Topic name">
-                    <button class="btn btn-outline-secondary" type="button" id="create-topic-btn">Create topic
-                    </button>
+                <div class="card d-flex">
+                    <table class="table" id="topics-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Topic Name</th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Number of msg</th>
+                                <th scope="col">Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <hr>
+                    <div class="input-group mb-3">
+                        <input type="text" name="key" id="create_topic" class="form-control" placeholder="Topic name"
+                               aria-label="Topic name">
+                        <button class="btn btn-outline-secondary" type="button" id="create-topic-btn">Create topic
+                        </button>
+                    </div>
+                    <hr>
                 </div>
-                <hr>
             </div>
             <div id="topic-messages-page">
                 <div id="topic-msg-content" class="card d-flex">
                     <nav class="navbar navbar-expand-lg navbar-light bg-light">
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarPartitionsDropdown"
-                                       role="button"
-                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Partition
-                                    </a>
-                                    <select class="form-select" id="partition-dropdown">
+                                <li class="nav-item right-margin">
+                                    <select class="custom-select" id="partition-dropdown">
                                         <option value="all" selected>All</option>
                                     </select>
                                 </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarOffsetDropdown" role="button"
-                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Offset
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarOffsetDropdown">
-                                        <a class="dropdown-item" href="#">Newest</a>
-                                        <a class="dropdown-item" href="#">Oldest</a>
-                                    </div>
+                                <li class="nav-item right-margin">
+                                    <select class="custom-select" id="offset-dropdown">
+                                        <option value="NEW_FIRST">Newest</option>
+                                        <option value="OLD_FIRST">Oldest</option>
+                                    </select>
                                 </li>
                             </ul>
                             <div class="d-flex">
@@ -275,7 +254,6 @@
                         <li class="page-item"><a class="page-link" href="#">Next</a></li>
                     </ul>
                 </nav>
-
             </div>
             <div id="partitions-page">
                 Partitions<br>
@@ -326,5 +304,7 @@
     </div>
 
     <script src="kafka_ui.js" type="module"></script>
+    <script src="/q/dev/resources/js/jquery.min.js"></script>
+    <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
