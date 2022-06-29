@@ -6,9 +6,9 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
 import io.quarkus.kafka.client.runtime.KafkaTopicClient;
-import io.quarkus.kafka.client.runtime.KafkaWebUiUtils;
-import io.quarkus.kafka.client.runtime.devconsole.model.KafkaMessageCreateRequest;
-import io.quarkus.kafka.client.runtime.devconsole.model.Order;
+import io.quarkus.kafka.client.runtime.KafkaDevUiUtils;
+import io.quarkus.kafka.client.runtime.devui.model.KafkaMessageCreateRequest;
+import io.quarkus.kafka.client.runtime.devui.model.Order;
 import io.quarkus.vertx.web.ReactiveRoutes;
 import io.quarkus.vertx.web.Route;
 import io.vertx.ext.web.RoutingContext;
@@ -30,7 +30,7 @@ public class KafkaDevUiResource {
     @Inject
     KafkaTopicClient topicClient;
     @Inject
-    KafkaWebUiUtils webUtils;
+    KafkaDevUiUtils webUtils;
 
     //Sume plmumbing code to provide execution environment similar to Dev UI in extension
     @Route(methods = Route.HttpMethod.POST, path = "/kafka-admin", consumes = ReactiveRoutes.APPLICATION_JSON, produces = ReactiveRoutes.APPLICATION_JSON)
