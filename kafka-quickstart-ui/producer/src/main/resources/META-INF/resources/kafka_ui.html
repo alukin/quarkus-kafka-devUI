@@ -264,41 +264,49 @@
                 TBD
             </div>
             <div id="consumer-groups-page">
-                <table class="table" id="cgropus-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">State</th>
-                            <th scope="col">Id</th>
-                            <th scope="col">Coordinator</th>
-                            <th scope="col">Protocol</th>
-                            <th scope="col">Members</th>
-                            <th scope="col">Lag(Sum)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="card d-flex">
+                    <table class="table" id="cgropus-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">State</th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Coordinator</th>
+                                <th scope="col">Protocol</th>
+                                <th scope="col">Members</th>
+                                <th scope="col">Lag(Sum)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div id="access-control-list-page">
                 ACL<br>
                 TBD
             </div>
             <div id="nodes-page">
-                <b>Kafka cluster id:&nbsp;</b><span id="cluster-id"></span><br>
-                <b>Controller node (broker):&nbsp;</b><span id="cluster-controller"></span><br>
-                <b>ACL operations:&nbsp;</b><span id="cluster-acl"></span><br>
-                <h3>Cluster nodes</h3>
-                <table class="table" id="cluster-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Host</th>
-                            <th scope="col">Port</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="card d-flex">
+                    <div class="card-body">
+                        <b>Kafka cluster id:&nbsp;</b><span id="cluster-id"></span><br>
+                        <b>Controller node (broker):&nbsp;</b><span id="cluster-controller"></span><br>
+                        <b>ACL operations:&nbsp;</b><span id="cluster-acl"></span><br>
+                    </div>
+                </div>
+                <h3 class="top-margin">Cluster nodes</h3>
+                <div class="card">
+                    <table class="table" id="cluster-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Host</th>
+                                <th scope="col">Port</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
