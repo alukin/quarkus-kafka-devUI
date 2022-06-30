@@ -20,7 +20,7 @@ export default class ConsumerGroupPage {
             action: "getInfo", key: "0", value: "0"
         };
         doPost(req, (data) => {
-            updateInfo(data);
+            this.updateInfo(data);
             this.updateConsumerGroups(data.consumerGroups);
         }, data => {
             errorPopUp("Error getting Kafka info: ", data);

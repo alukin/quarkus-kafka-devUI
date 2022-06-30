@@ -62,7 +62,7 @@ export default class TopicsPage {
         }
     }
 
-    onTopicsFailed() {
+    onTopicsFailed(data) {
         errorPopUp("Error getting topics: ", data);
     }
 
