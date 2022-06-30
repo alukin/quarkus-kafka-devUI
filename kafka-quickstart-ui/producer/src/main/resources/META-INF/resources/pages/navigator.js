@@ -95,12 +95,14 @@ export default class Navigator {
         const keys = Object.keys(this.allPages);
         for (let i = 0; i < keys.length; i++) {
             const elementName = keys[i];
-            const d = document.getElementById(elementName);
+            const d = $("#" + elementName);
             if (d !== null) {
                 if (elementName !== requestedPage) {
-                    d.style.display = "none";
+                    d.removeClass("shown")
+                        .addClass("hidden");
                 } else {
-                    d.style.display = "block";
+                    d.removeClass("hidden")
+                        .addClass("shown");
                     this.open(requestedPage, params);
                 }
             } else {
