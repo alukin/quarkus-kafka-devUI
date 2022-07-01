@@ -2,10 +2,8 @@ package org.acme.kafka.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
-import io.quarkus.kafka.client.runtime.KafkaTopicClient;
 import io.quarkus.kafka.client.runtime.KafkaDevUiUtils;
 import io.quarkus.kafka.client.runtime.devui.model.KafkaMessageCreateRequest;
 import io.quarkus.kafka.client.runtime.devui.model.Order;
@@ -22,6 +20,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 public class KafkaDevUiResource {
+
     private static final Logger LOGGER = Logger.getLogger(KafkaDevUiResource.class);
     @Inject
     KafkaAdminClient adminClient;
@@ -53,7 +52,7 @@ public class KafkaDevUiResource {
                 switch (action) {
                     case "getInfo":
                         message = webUtils.toJson(webUtils.getKafkaInfo());
-                        res=true;
+                        res = true;
                         break;
                     case "createTopic":
                         res = adminClient.createTopic(key);
@@ -65,24 +64,24 @@ public class KafkaDevUiResource {
                         break;
                     case "getTopics":
                         message = webUtils.toJson(webUtils.getTopics());
-                        res=true;
+                        res = true;
                         break;
                     case "topicMessages":
                         body.getInteger("");
                         message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(), 0L, 10L));
-                        res=true;
+                        res = true;
                         break;
                     case "createMessage":
                         var mapper = new JsonMapper();
                         var rq = mapper.readValue(event.getBodyAsString(), KafkaMessageCreateRequest.class);
                         webUtils.createMessage(rq);
                         message = "{}";
-                        res=true;
+                        res = true;
                         break;
                     case "getPartitions":
                         var topicName = body.getString("topicName");
                         message = webUtils.toJson(webUtils.partitions(topicName));
-                        res=true;
+                        res = true;
                         break;
                     default:
                         res = false;
@@ -109,13 +108,17 @@ public class KafkaDevUiResource {
         event.response().setStatusCode(status.code());
         event.response().end(message);
     }
-    
+
     protected void dispatch(RoutingContext event) {
         try {
-            handlePost(event);
+            if (event.body() != null) {
+                handlePost(event);
+            } else {
+                endResponse(event, BAD_REQUEST, "No POST request body to process");
+            }
         } catch (Exception e) {
             event.fail(e);
         }
     }
-    
+
 }
