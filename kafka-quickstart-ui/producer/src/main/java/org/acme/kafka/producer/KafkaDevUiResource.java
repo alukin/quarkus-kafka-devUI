@@ -26,8 +26,6 @@ public class KafkaDevUiResource {
     @Inject
     KafkaAdminClient adminClient;
     @Inject
-    KafkaTopicClient topicClient;
-    @Inject
     KafkaDevUiUtils webUtils;
 
     //Sume plmumbing code to provide execution environment similar to Dev UI in extension
@@ -38,33 +36,16 @@ public class KafkaDevUiResource {
         }
     }
 
-    protected void dispatch(RoutingContext event) {
-        try {
-            handlePost(event);
-            actionSuccess(event);
-        } catch (Exception e) {
-            event.fail(e);
-        }
-    }
-
-    protected void actionSuccess(RoutingContext event) {
-        if (!event.response().ended()) {
-            event.response().setStatusCode(HttpResponseStatus.SEE_OTHER.code()).headers()
-                    .set(HttpHeaderNames.LOCATION, event.request().absoluteURI());
-            event.response().end();
-        }
-    }
-
     //This is method that could be copy-patsted to the extension KafkaDevConsoleRecorder.java
     public void handlePost(RoutingContext event) {
 
-        var body = event.getBodyAsJson();
+        var body = event.body().asJsonObject();
         String action = body.getString("action");
         String key = body.getString("key");
         String value = body.getString("value");
         String message = "OK";
 
-        boolean res = true;
+        boolean res = false;
         if (null == action) {
             res = false;
         } else {
@@ -72,6 +53,7 @@ public class KafkaDevUiResource {
                 switch (action) {
                     case "getInfo":
                         message = webUtils.toJson(webUtils.getKafkaInfo());
+                        res=true;
                         break;
                     case "createTopic":
                         res = adminClient.createTopic(key);
@@ -83,20 +65,24 @@ public class KafkaDevUiResource {
                         break;
                     case "getTopics":
                         message = webUtils.toJson(webUtils.getTopics());
+                        res=true;
                         break;
                     case "topicMessages":
                         body.getInteger("");
                         message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(), 0L, 10L));
+                        res=true;
                         break;
                     case "createMessage":
                         var mapper = new JsonMapper();
                         var rq = mapper.readValue(event.getBodyAsString(), KafkaMessageCreateRequest.class);
                         webUtils.createMessage(rq);
                         message = "{}";
+                        res=true;
                         break;
                     case "getPartitions":
                         var topicName = body.getString("topicName");
                         message = webUtils.toJson(webUtils.partitions(topicName));
+                        res=true;
                         break;
                     default:
                         res = false;
@@ -123,4 +109,13 @@ public class KafkaDevUiResource {
         event.response().setStatusCode(status.code());
         event.response().end(message);
     }
+    
+    protected void dispatch(RoutingContext event) {
+        try {
+            handlePost(event);
+        } catch (Exception e) {
+            event.fail(e);
+        }
+    }
+    
 }
