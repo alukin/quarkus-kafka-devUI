@@ -17,6 +17,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>11</maven.compiler.target>
+        <!-- JS libs -->
+        <path.kafkaui>kafka-ui</path.kafkaui>
+        <webjar.bootstrap.version>4.6.1</webjar.bootstrap.version>
+        <webjar.font-awesome.version>6.1.1</webjar.font-awesome.version>
+        <webjar.jquery.version>3.6.0</webjar.jquery.version>
+        <json-rpc.version>1.3.0</json-rpc.version>
+        <bootstrap-mutiliselect.version>0.9.15</bootstrap-mutiliselect.version>
+                
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -86,6 +94,125 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <!-- JavaScript stuff from WebJars -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>install-jS</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems> 
+                            <!-- Bootstrap -->
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>bootstrap</artifactId>
+                                    <version>${webjar.bootstrap.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/css/</outputDirectory>
+                                    <includes>**/bootstrap.min.css, **/bootstrap.min.css.map</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>                                
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>bootstrap</artifactId>
+                                    <version>${webjar.bootstrap.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/js/</outputDirectory>
+                                    <includes>**/bootstrap.bundle.min.js, **/bootstrap.bundle.min.js.map</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>bootstrap-multiselect</artifactId>
+                                    <version>${bootstrap-mutiliselect.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/js/</outputDirectory>
+                                    <includes>**/bootstrap-multiselect.js</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>bootstrap-multiselect</artifactId>
+                                    <version>${bootstrap-mutiliselect.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/css/</outputDirectory>
+                                    <includes>**/bootstrap-multiselect.css</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>                                
+                                <!-- JQuery -->
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>jquery</artifactId>
+                                    <version>${webjar.jquery.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/js/</outputDirectory>
+                                    <includes>**/jquery.min.js, **/jquery.min.js.map</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                                <!-- Font awesome -->
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>font-awesome</artifactId>
+                                    <version>${webjar.font-awesome.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/fontawesome/css</outputDirectory>
+                                    <includes>**/css/all.min.css</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>font-awesome</artifactId>
+                                    <version>${webjar.font-awesome.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/fontawesome/webfonts</outputDirectory>
+                                    <includes>**/webfonts/**.*</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                                <!-- JSON-RPC -->
+                                <artifactItem>
+                                    <groupId>org.webjars.npm</groupId>
+                                    <artifactId>json-rpc-2.0</artifactId>
+                                    <version>${json-rpc.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/json-rpc/</outputDirectory>
+                                    <includes>**/**.js</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>                                                                        
+                                </artifactItem>        
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
         </plugins>
     </build>
     <profiles>
