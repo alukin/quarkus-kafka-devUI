@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
 import io.quarkus.kafka.client.runtime.KafkaDevUiUtils;
-import io.quarkus.kafka.client.runtime.devui.model.KafkaMessageCreateRequest;
-import io.quarkus.kafka.client.runtime.devui.model.Order;
+import io.quarkus.kafka.client.runtime.devui.model.request.KafkaMessageCreateRequest;
+import io.quarkus.kafka.client.runtime.devui.model.request.KafkaMessagesRequest;
+import io.quarkus.kafka.client.runtime.devui.model.request.KafkaOffsetRequest;
 import io.quarkus.vertx.web.ReactiveRoutes;
 import io.quarkus.vertx.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
@@ -67,10 +67,21 @@ public class KafkaDevUiResource {
                         res = true;
                         break;
                     case "topicMessages":
-                        body.getInteger("");
-                        message = webUtils.toJson(webUtils.getTopicMessages(key, Order.OLD_FIRST, List.of(), 0L, 10L));
+                        var msgRequest = event.body().asPojo(KafkaMessagesRequest.class);
+                        message = webUtils.toJson(webUtils.getMessages(msgRequest));
                         res = true;
                         break;
+                    case "getStartOffset":
+                        var request = event.body().asPojo(KafkaOffsetRequest.class);
+                        message = webUtils.toJson(webUtils.getStartOffset(request));
+                        res = true;
+                        break;
+                    case "getPage":
+                        var msRequest = event.body().asPojo(KafkaMessagesRequest.class);
+                        message = webUtils.toJson(webUtils.getPage(msRequest));
+                        res = true;
+                        break;
+
                     case "createMessage":
                         var mapper = new JsonMapper();
                         var rq = mapper.readValue(event.getBodyAsString(), KafkaMessageCreateRequest.class);

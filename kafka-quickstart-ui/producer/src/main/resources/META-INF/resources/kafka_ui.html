@@ -30,7 +30,8 @@
             }
 
             .content-holder {
-                height: 100vh
+                height: auto;
+                min-height: 100vh;
             }
 
             .link {
@@ -63,6 +64,14 @@
             a:hover {
                 color: lightblue;
             }
+
+            .multiselect-container > li > a > label > input[type="radio"] {
+                visibility: hidden;
+            }
+
+            .multiselect-container > li > a > label {
+                padding-left: 15px !important;
+            }
         </style>
 
     </head>
@@ -90,7 +99,7 @@
                         <div>
                             <div class="collapse navbar-collapse d-flex justify-content-start" id="messageFilters">
                                 <div class="right-margin">
-                                    <select class="custom-select" id="partition-select">
+                                    <select class="custom-select" id="msg-modal-partition-select">
                                         <option value="all" selected>All</option>
                                     </select>
                                 </div>
@@ -218,13 +227,16 @@
                     <nav class="navbar navbar-expand-lg navbar-light bg-light">
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
-                                <li class="nav-item right-margin">
-                                    <select class="custom-select" id="partition-dropdown">
-                                        <option value="all" selected>All</option>
+                                <li class="nav-item right-margin d-flex flex-row align-self-end">
+                                    <label for="msg-page-partition-select"
+                                           class="right-margin top-margin">Partitions:</label>
+                                    <select id="msg-page-partition-select" class="custom-select" multiple="multiple">
+                                        <option>0</option>
                                     </select>
                                 </li>
-                                <li class="nav-item right-margin">
-                                    <select class="custom-select" id="offset-dropdown">
+                                <li class="nav-item right-margin d-flex flex-row align-self-end">
+                                    <label for="msg-page-sorting-select" class="right-margin top-margin">Offset:</label>
+                                    <select id="msg-page-sorting-select" class="custom-select">
                                         <option value="NEW_FIRST">Newest</option>
                                         <option value="OLD_FIRST">Oldest</option>
                                     </select>
@@ -259,11 +271,11 @@
                 </div>
                 <nav class="d-flex justify-content-end top-margin" id="msg-pagination">
                     <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item previous"><a class="page-link" href="#">Previous</a></li>
                         <li class="page-item active"><a class="page-link" href="#">1</a></li>
                         <li class="page-item"><a class="page-link" href="#">2</a></li>
                         <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        <li class="page-item next"><a class="page-link" href="#">Next</a></li>
                     </ul>
                 </nav>
             </div>
@@ -331,5 +343,10 @@
     <script src="kafka_ui.js" type="module"></script>
     <script src="/q/dev/resources/js/jquery.min.js"></script>
     <script src="/q/dev/resources/js/bootstrap.bundle.min.js"></script>
+
+    <!--    TODO: Ask to add these to resources-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
     </body>
 </html>
