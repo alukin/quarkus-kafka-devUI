@@ -71,9 +71,9 @@ public class KafkaDevUiResource {
                         message = webUtils.toJson(webUtils.getMessages(msgRequest));
                         res = true;
                         break;
-                    case "getStartOffset":
+                    case "getOffset":
                         var request = event.body().asPojo(KafkaOffsetRequest.class);
-                        message = webUtils.toJson(webUtils.getStartOffset(request));
+                        message = webUtils.toJson(webUtils.getOffset(request));
                         res = true;
                         break;
                     case "getPage":

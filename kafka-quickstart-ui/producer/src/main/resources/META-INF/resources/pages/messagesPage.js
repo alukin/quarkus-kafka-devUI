@@ -1,15 +1,14 @@
 import {doPost, errorPopUp} from "../web/web.js";
 import timestampToFormattedString from "../util/datetimeUtil.js";
-import {createTableItem} from "../util/contentManagement.js";
+import {createTableItem, createTableItemHtml} from "../util/contentManagement.js";
 
 const MODAL_KEY_TAB = "header-key-tab-pane";
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default class MessagesPage {
     constructor(containerId) {
         this.containerId = containerId;
         this.registerButtonHandlers();
-        this.pagesCache = new Map();
         Object.getOwnPropertyNames(MessagesPage.prototype).forEach((key) => {
             if (key !== 'constructor') {
                 this[key] = this[key].bind(this);
@@ -30,32 +29,66 @@ export default class MessagesPage {
             this.setActiveTab(MODAL_KEY_TAB);
         });
 
-        $('#msg-page-sorting-select').multiselect({
-            allSelectedText: 'All',
+        $('#msg-page-sorting-select').multiselect({});
+
+        $('#msg-page-partition-select').multiselect({
             includeSelectAllOption: true
         });
 
-        // FIXME: should be disabled, when no previous page available;
-        // TODO: add force reload button
+        $("#msg-page-sorting-select").change(() => {
+            window.currentContext.currentPage = 1;
+            this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed);
+            this.redrawPageNav();
+        });
+
+        $("#msg-page-partition-select").change(() => {
+            window.currentContext.currentPage = 1;
+            this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed);
+            this.redrawPageNav();
+
+        });
+
         $(".previous").click(() => {
+            if (window.currentContext.currentPage === 1) return;
+
             window.currentContext.currentPage = window.currentContext.currentPage - 1;
             this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed);
+            this.redrawPageNav();
         })
 
         $(".next").click(() => {
+            if (window.currentContext.currentPage === currentContext.maxPageNumber) return;
+
             window.currentContext.currentPage = window.currentContext.currentPage + 1;
             this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed);
+            this.redrawPageNav();
         })
+
+        $("#reload-msg-btn").click(() => {
+            this.open([currentContext.topicName]);
+            //TODO: show spinner
+        });
     }
 
     open(params) {
         const topicName = params[0];
         window.currentContext = {
             topicName: topicName,
-            currentPage: 1 //always start with first page
+            currentPage: 1, //always start with first page
+            pagesCache: new Map()
         };
 
+        this.clearMessageTable();
         this.requestPartitions(topicName, this.onPartitionsLoaded, this.onPartitionsFailed);
+    }
+
+    // Key format: ORDER-partition1-partition2-...-partitionN-pageNumber. Like: NEW_FIRST-0-1-17
+    generateCacheKey(pageNumber) {
+        const order = this.getOrder();
+        const partitions = this.getPartitions();
+        const partitionsKeyPart = partitions.reduce((partialKey, str) => partialKey + "-" + str, 0);
+
+        return order + partitionsKeyPart + "-" + pageNumber;
     }
 
     requestPartitions(topicName, onPartitionsLoaded, onPartitionsFailed) {
@@ -93,7 +126,18 @@ export default class MessagesPage {
             .multiselect('updateButtonText')
             .multiselect('rebuild');
 
-        this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed)
+
+        // As we want first page to get cached too, so request that offset, apparently.
+        if (currentContext.currentPage === 1) {
+            this.requestOffset(currentContext.topicName, this.getOrder(),
+                (data) => currentContext.pagesCache.set(this.generateCacheKey(1), data),
+                (data, errorType, error) => {
+                    errorPopUp("Could not get first page offset.")
+                });
+        }
+
+        this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed);
+        this.loadMaxPageNumber();
     }
 
     onPartitionsFailed(data, errorType, error) {
@@ -102,25 +146,25 @@ export default class MessagesPage {
 
     //TODO: clean cache, if different partitions selected? or make cache support different partitions combinations. List as key?
     getPage(pageNumber, onMessagesLoaded, onMessagesFailed) {
-        if (this.pagesCache.has(pageNumber)) {
-            const offset = this.pagesCache.get(pageNumber);
+        const key = this.generateCacheKey(pageNumber);
+        if (currentContext.pagesCache.has(key)) {
+            const offset = currentContext.pagesCache.get(key);
             return this.requestMessages(currentContext.topicName, pageNumber, offset, onMessagesLoaded, onMessagesFailed)
         }
-        return this.requestPage(pageNumber, onMessagesLoaded, onMessagesFailed);
+
+        return this.requestOffset(currentContext.topicName, this.getOrder(), (data) => {
+            this.requestMessages(currentContext.topicName, currentContext.currentPage, data, onMessagesLoaded, onMessagesFailed);
+        }, (data, errorType, error) => errorPopUp("Could not load messages."));
     }
 
     requestMessages(topicName, pageNumber, partitionOffset, onMessagesLoaded, onMessagesFailed) {
-        const partitions = this.getPartitions();
-
-        let order = $("#msg-page-sorting-select").val();
-
         const req = {
             action: "topicMessages",
             topicName: topicName,
             partitionOffset: partitionOffset,
-            pageSize: 30, //FIXME: global? variable: pageSize
+            pageSize: PAGE_SIZE,
             pageNumber: pageNumber,
-            order: order
+            order: this.getOrder()
         };
 
         doPost(req, onMessagesLoaded, onMessagesFailed);
@@ -133,15 +177,14 @@ export default class MessagesPage {
     }
 
     requestPage(requestedPage, onPageLoaded, onPageLoadFailed) {
-        const order = $("#msg-page-sorting-select").val();
         const topicName = currentContext.topicName;
         const partitions = this.getPartitions();
         const req = {
             action: "getPage",
             topicName: topicName,
-            order: order,
+            order: this.getOrder(),
             partitions: partitions,
-            pageSize: 30, //FIXME
+            pageSize: PAGE_SIZE,
             pageNumber: requestedPage
         };
 
@@ -149,11 +192,13 @@ export default class MessagesPage {
     }
 
     onMessagesLoaded(data) {
-        this.pagesCache.set(currentContext.currentPage + 1, data.partitionOffset);
+        const key = this.generateCacheKey(currentContext.currentPage + 1);
+        currentContext.pagesCache.set(key, data.partitionOffset);
 
         const messages = data.messages;
+        this.clearMessageTable();
+
         let msgTableBody = $('#msg-table-body');
-        msgTableBody.empty();
 
         for (let i = 0; i < messages.length; i++) {
             let tableRow = $("<tr/>");
@@ -161,16 +206,62 @@ export default class MessagesPage {
             tableRow.append(createTableItem(messages[i].partition));
             tableRow.append(createTableItem(timestampToFormattedString(messages[i].timestamp)));
             tableRow.append(createTableItem(messages[i].key));
-            // TODO: add expanding
-            tableRow.append(createTableItem(messages[i].value));
+
+            const value = messages[i].value;
+            if (value.length < 50) {
+                tableRow.append(createTableItem(value));
+            } else {
+                // FIXME: need to add an expand button + make each column take fixed width.
+                // We need to create an expanding area, if message is too long.
+                const wrapDiv = $("<div/>")
+                    .addClass("d-flex")
+                    .addClass("flex-row");
+
+                const text = $("<p/>")
+                    .text(value.slice(0, 50));
+                const dots = $("<span/>")
+                    .addClass("text-shown")
+                    .addClass("dots")
+                    .text("...");
+                const hiddenText = $("<span/>")
+                    .addClass("hidden")
+                    .addClass("hidden-text")
+                    .text(value.slice(50, value.length));
+                text.append(dots)
+                    .append(hiddenText);
+                wrapDiv.append(text);
+                const td = createTableItemHtml(text)
+                    .click(this.toggleContent());
+                tableRow.append(td);
+            }
             msgTableBody.append(tableRow);
         }
 
         currentContext.lastOffset = data.partitionOffset;
     }
 
+    toggleContent() {
+        return (event) => {
+            const textBlock = $(event.target);
+            const dots = textBlock.find(".dots");
+            const hiddenText = textBlock.find(".hidden-text");
+
+            if (dots.hasClass("hidden")) {
+                dots.removeClass("hidden");
+                dots.addClass("text-shown");
+                hiddenText.removeClass("text-shown");
+                hiddenText.addClass("hidden");
+            } else {
+                dots.removeClass("text-shown");
+                dots.addClass("hidden");
+                hiddenText.removeClass("hidden");
+                hiddenText.addClass("text-shown");
+            }
+        };
+    }
+
     onMessagesFailed(data, errorType, error) {
-        console.error("Error  getting topic messages");
+        console.error("Error getting topic messages");
     }
 
     requestCreateMessage() {
@@ -211,7 +302,89 @@ export default class MessagesPage {
         $('body').removeClass('modal-open');
         $('.modal-backdrop').remove();
 
-        // TODO: make active value tab
         this.setActiveTab(MODAL_KEY_TAB);
     }
+
+    clearMessageTable() {
+        $('#msg-table-body').empty();
+    }
+
+    redrawPageNav() {
+        //TODO: add GOTO page input
+        const currentPage = currentContext.currentPage;
+        let pages;
+        if (currentPage === 1) {
+            pages = [currentPage, currentPage + 1, currentPage + 2];
+            $(".previous").addClass("disabled");
+            $(".next").removeClass("disabled");
+        } else if (currentPage === currentContext.maxPageNumber) {
+            pages = [currentPage - 2, currentPage - 1, currentPage];
+            $(".previous").removeClass("disabled");
+            $(".next").addClass("disabled");
+        } else {
+            pages = [currentPage - 1, currentPage, currentPage + 1];
+            $(".previous").removeClass("disabled");
+            $(".next").removeClass("disabled");
+        }
+
+        const pagination = $("#msg-pagination");
+
+        // Remove all page children numbers.
+        for (let i = 0; i < 3; i++) {
+            pagination.children()[1].remove();
+        }
+
+        for (const p of pages) {
+            let a = $("<a/>")
+                .text("" + p)
+                .addClass("page-link");
+            let li = $("<li/>")
+                .addClass("page-item")
+                .click(() => {
+                    currentContext.currentPage = p;
+                    this.getPage(p, this.onMessagesLoaded, this.onMessagesFailed);
+                    this.redrawPageNav();
+                });
+
+            if (p === currentPage) {
+                li.addClass("active");
+            }
+            li.append(a);
+
+            const lastPosition = pagination.children().length - 1;
+            li.insertBefore(".next");
+        }
+    }
+
+    requestOffset(topicName, order, onOffsetLoaded, onOffsetFailed) {
+        const req = {
+            action: "getOffset",
+            topicName: topicName,
+            order: order,
+            requestedPartitions: this.getPartitions()
+        };
+        doPost(req, onOffsetLoaded, onOffsetFailed);
+    }
+
+    loadMaxPageNumber() {
+        this.requestOffset(
+            currentContext.topicName,
+            //TODO: extract constant for sorting directions
+            "NEW_FIRST",
+            (data) => {
+                //TODO: UNIFY
+                let totalElements = Object.values(data).reduce((partialSum, a) => partialSum + a, 0);
+                window.currentContext.maxPageNumber = Math.ceil(totalElements / PAGE_SIZE);
+                this.redrawPageNav();
+            },
+            (data, errorType, error) => {
+                console.error("Error getting max page number.");
+            }
+        );
+    }
+
+    getOrder() {
+        return $("#msg-page-sorting-select").val();
+    }
+
 }

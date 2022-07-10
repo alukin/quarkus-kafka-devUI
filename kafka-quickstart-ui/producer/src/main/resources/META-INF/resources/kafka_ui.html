@@ -57,6 +57,10 @@
                 display: flex;
             }
 
+            .text-shown {
+                display: inline;
+            }
+
             .hidden {
                 display: none
             }
@@ -72,6 +76,7 @@
             .multiselect-container > li > a > label {
                 padding-left: 15px !important;
             }
+
         </style>
 
     </head>
@@ -247,10 +252,19 @@
                                         type="button"
                                         id="publish-msg-modal-btn"
                                 >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-plus" viewBox="0 0 16 16">
+                                        <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z"/>
+                                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                                    </svg>
                                     Publish message
                                 </button>
-                                <button class="btn my-2 my-sm-0">
-                                    Delete messages
+                                <button class="btn my-2 my-sm-0"
+                                        id="reload-msg-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                    </svg>
+                                    Reload
                                 </button>
                             </div>
                         </div>
@@ -269,9 +283,9 @@
                         </tbody>
                     </table>
                 </div>
-                <nav class="d-flex justify-content-end top-margin" id="msg-pagination">
-                    <ul class="pagination">
-                        <li class="page-item previous"><a class="page-link" href="#">Previous</a></li>
+                <nav class="d-flex justify-content-end top-margin">
+                    <ul class="pagination" id="msg-pagination">
+                        <li class="page-item previous disabled"><a class="page-link" href="#">Previous</a></li>
                         <li class="page-item active"><a class="page-link" href="#">1</a></li>
                         <li class="page-item"><a class="page-link" href="#">2</a></li>
                         <li class="page-item"><a class="page-link" href="#">3</a></li>
