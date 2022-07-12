@@ -1,9 +1,9 @@
 package org.acme.kafka.producer;
 
 import io.quarkus.kafka.client.runtime.KafkaTopicClient;
-import io.quarkus.kafka.client.runtime.devui.model.KafkaMessage;
-import io.quarkus.kafka.client.runtime.devui.model.KafkaMessagePage;
-import io.quarkus.kafka.client.runtime.devui.model.Order;
+import io.quarkus.kafka.client.runtime.ui.model.KafkaMessage;
+import io.quarkus.kafka.client.runtime.ui.model.KafkaMessagePage;
+import io.quarkus.kafka.client.runtime.ui.model.Order;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.ResourceArg;
 import io.quarkus.test.junit.QuarkusTest;

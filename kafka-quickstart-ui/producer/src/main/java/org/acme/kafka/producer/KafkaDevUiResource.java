@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
-import io.quarkus.kafka.client.runtime.KafkaDevUiUtils;
-import io.quarkus.kafka.client.runtime.devui.model.request.KafkaMessageCreateRequest;
-import io.quarkus.kafka.client.runtime.devui.model.request.KafkaMessagesRequest;
-import io.quarkus.kafka.client.runtime.devui.model.request.KafkaOffsetRequest;
+import io.quarkus.kafka.client.runtime.KafkaUiUtils;
+import io.quarkus.kafka.client.runtime.ui.model.request.KafkaMessageCreateRequest;
+import io.quarkus.kafka.client.runtime.ui.model.request.KafkaMessagesRequest;
+import io.quarkus.kafka.client.runtime.ui.model.request.KafkaOffsetRequest;
 import io.quarkus.vertx.web.ReactiveRoutes;
 import io.quarkus.vertx.web.Route;
 import io.vertx.ext.web.RoutingContext;
@@ -25,7 +25,7 @@ public class KafkaDevUiResource {
     @Inject
     KafkaAdminClient adminClient;
     @Inject
-    KafkaDevUiUtils webUtils;
+    KafkaUiUtils webUtils;
 
     //Sume plmumbing code to provide execution environment similar to Dev UI in extension
     @Route(methods = Route.HttpMethod.POST, path = "/kafka-admin", consumes = ReactiveRoutes.APPLICATION_JSON, produces = ReactiveRoutes.APPLICATION_JSON)
