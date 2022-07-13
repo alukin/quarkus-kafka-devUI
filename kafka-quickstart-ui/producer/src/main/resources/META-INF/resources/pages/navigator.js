@@ -1,6 +1,5 @@
 import MessagesPage from "./messagesPage.js";
 import TopicsPage from "./topicsPage.js";
-import PartitionsPage from "./partitionsPage.js";
 import SchemaPage from "./schemaPage.js";
 import ConsumerGroupPage from "./consumerGroupPage.js";
 import AccessControlListPage from "./accessControlListPage.js";
@@ -8,7 +7,6 @@ import NodesPage from "./nodesPage.js";
 
 export const pages = {
     TOPICS: "topics-page",
-    PARTITIONS: "partitions-page",
     SCHEMA: "schema-page",
     CONSUMER_GROUPS: "consumer-groups-page",
     ACCESS_CONTROL_LIST: "access-control-list-page",
@@ -27,11 +25,6 @@ export default class Navigator {
             header: "Topics",
             showInNavbar: true,
             instance: new TopicsPage(this, pages.TOPICS)
-        },
-        [pages.PARTITIONS]: {
-            header: "Partitions",
-            showInNavbar: true,
-            instance: new PartitionsPage(pages.PARTITIONS)
         },
         [pages.SCHEMA]: {
             header: "Schema registry",
