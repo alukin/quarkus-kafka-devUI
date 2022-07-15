@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.kafka.client.runtime.KafkaAdminClient;
 import io.quarkus.kafka.client.runtime.KafkaUiUtils;
+import io.quarkus.kafka.client.runtime.ui.model.request.KafkaCreateTopicRequest;
 import io.quarkus.kafka.client.runtime.ui.model.request.KafkaMessageCreateRequest;
 import io.quarkus.kafka.client.runtime.ui.model.request.KafkaMessagesRequest;
 import io.quarkus.kafka.client.runtime.ui.model.request.KafkaOffsetRequest;
@@ -55,7 +56,8 @@ public class KafkaDevUiResource {
                         res = true;
                         break;
                     case "createTopic":
-                        res = adminClient.createTopic(key);
+                        var topicCreateRq = event.body().asPojo(KafkaCreateTopicRequest.class);
+                        res = adminClient.createTopic(topicCreateRq);
                         message = webUtils.toJson(webUtils.getTopics());
                         break;
                     case "deleteTopic":

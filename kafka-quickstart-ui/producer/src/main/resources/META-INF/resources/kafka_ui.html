@@ -49,12 +49,18 @@
                 margin-right: 1em;
             }
 
+            .left-margin {
+                margin-left: 1em;
+            }
+
             .table {
                 margin-bottom: 0;
             }
 
             .shown {
                 display: flex;
+                height: auto;
+                min-width: 100%;
             }
 
             .text-shown {
@@ -65,7 +71,11 @@
                 display: none
             }
 
-            a:hover {
+            .nav-row:hover > a {
+                color: lightblue;
+            }
+
+            .nav-row:hover > i {
                 color: lightblue;
             }
 
@@ -75,6 +85,10 @@
 
             .multiselect-container > li > a > label {
                 padding-left: 15px !important;
+            }
+
+            .page {
+                min-height: calc(100vh - 210px);
             }
 
         </style>
@@ -192,9 +206,55 @@
                 </div>
             </div>
         </div>
+        <div
+                class="modal fade hidden"
+                id="create-topic-modal"
+                tabindex="-1"
+                aria-hidden="true"
+                style="display: none"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create topic</h5>
+                        <button
+                                class="close-modal-btn btn fa fa-close"
+                                type="button"
+                                aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body container">
+                        <div>
+                            <label for="topic-name-modal-input">Topic name:</label>
+                            <input id="topic-name-modal-input" type="text" class="form-control"
+                                   placeholder="my-awesome-topic"/>
+                            <label for="partitions-modal-input" class="top-margin">Partitions:</label>
+                            <input id="partitions-modal-input" type="number" class="form-control"
+                                   placeholder="1 (Default)" min="1"/>
+                            <label for="replications-modal-input" class="top-margin">Replications:</label>
+                            <input id="replications-modal-input" type="number" class="form-control"
+                                   placeholder="1 (Default)" min="1"/>
 
-        <div class="col-md-2" style="background-color:#005fff; color:#ffffff">
-            <ul class="nav flex-column" id="navbar-list">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-secondary close-modal-btn"
+                                data-bs-dismiss="modal"
+                        >Close
+                        </button>
+                        <button type="button" class="btn btn-primary" id="create-topic-btn">Create
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="nav-menu-panel" class="col-md-2" style="background-color:#005fff; color:#ffffff">
+            <h3 class="top-margin left-margin">Kafka dev UI</h3>
+            <ul class="nav flex-column top-margin" id="navbar-list">
             </ul>
         </div>
 
@@ -203,13 +263,19 @@
                 <ol id="nav-breadcrumb" class="breadcrumb">
                 </ol>
             </nav>
-            <div id="topics-page">
-                <div class="card d-flex flex-fill">
+            <div id="topics-page" class="flex-column">
+                <div class="d-flex justify-content-end">
+                    <button id="open-create-topic-modal-btn" class="btn btn-primary"><i class="bi bi-plus"> </i> Create
+                        topic
+                    </button>
+                </div>
+                <div class="card d-flex flex-fill top-margin">
                     <table class="table" id="topics-table">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">Topic Name</th>
                                 <th scope="col">Id</th>
+                                <th scope="col">Partitions count</th>
                                 <th scope="col">Number of msg</th>
                                 <th scope="col">Control</th>
                             </tr>
@@ -217,14 +283,6 @@
                         <tbody>
                         </tbody>
                     </table>
-                    <hr>
-                    <div class="input-group mb-3">
-                        <input type="text" name="key" id="create_topic" class="form-control" placeholder="Topic name"
-                               aria-label="Topic name">
-                        <button class="btn btn-outline-secondary" type="button" id="create-topic-btn">Create topic
-                        </button>
-                    </div>
-                    <hr>
                 </div>
             </div>
             <div id="topic-messages-page" class="flex-column">
@@ -252,7 +310,8 @@
                                         type="button"
                                         id="publish-msg-modal-btn"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-plus" viewBox="0 0 16 16">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-envelope-plus" viewBox="0 0 16 16">
                                         <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z"/>
                                         <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
                                     </svg>
@@ -260,8 +319,10 @@
                                 </button>
                                 <button class="btn my-2 my-sm-0"
                                         id="reload-msg-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                              d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
                                     </svg>
                                     Reload
@@ -269,19 +330,29 @@
                             </div>
                         </div>
                     </nav>
-                    <table class="table" id="msg-table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Offset</th>
-                                <th scope="col">Partition</th>
-                                <th scope="col">Timestamp</th>
-                                <th scope="col">Key</th>
-                                <th scope="col">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="msg-table-body">
-                        </tbody>
-                    </table>
+                    <div class="page d-flex align-content-center justify-content-center">
+                        <div id="msg-table-holder" class="align-items-start">
+                            <table class="table" id="msg-table">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th scope="col">Offset</th>
+                                        <th scope="col">Partition</th>
+                                        <th scope="col">Timestamp</th>
+                                        <th scope="col">Key</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="msg-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="message-load-spinner"
+                             class="hidden top-margin align-items-center justify-content-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <nav class="d-flex justify-content-end top-margin">
                     <ul class="pagination" id="msg-pagination">
@@ -358,5 +429,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     </body>
 </html>

@@ -24,27 +24,32 @@ export default class Navigator {
         [pages.TOPICS]: {
             header: "Topics",
             showInNavbar: true,
-            instance: new TopicsPage(this, pages.TOPICS)
+            instance: new TopicsPage(this, pages.TOPICS),
+            icon: "bi-collection"
         },
         [pages.SCHEMA]: {
             header: "Schema registry",
             showInNavbar: true,
-            instance: new SchemaPage(pages.SCHEMA)
+            instance: new SchemaPage(pages.SCHEMA),
+            icon: "bi-file-code"
         },
         [pages.CONSUMER_GROUPS]: {
             header: "Consumer groups",
             showInNavbar: true,
-            instance: new ConsumerGroupPage(pages.CONSUMER_GROUPS)
+            instance: new ConsumerGroupPage(pages.CONSUMER_GROUPS),
+            icon: "bi-inboxes"
         },
         [pages.ACCESS_CONTROL_LIST]: {
             header: "Access control list",
             showInNavbar: true,
-            instance: new AccessControlListPage(pages.ACCESS_CONTROL_LIST)
+            instance: new AccessControlListPage(pages.ACCESS_CONTROL_LIST),
+            icon: "bi-shield-lock"
         },
         [pages.NODES]: {
             header: "Nodes",
             showInNavbar: true,
-            instance: new NodesPage(pages.NODES)
+            instance: new NodesPage(pages.NODES),
+            icon: "bi-diagram-3"
         },
         [pages.TOPIC_MESSAGES]: {
             header: "Messages",
@@ -59,11 +64,6 @@ export default class Navigator {
         const navbar = $("#navbar-list");
         navbar.empty();
 
-        const header = $("<h3/>", {
-            text: "Kafka dev UI"
-        })
-            .addClass("top-margin")
-        navbar.append(header);
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             const value = this.allPages[key];
@@ -71,15 +71,26 @@ export default class Navigator {
             const navItem = $("<li/>")
                 .addClass("nav-item");
 
+            const navHolder = $("<div/>")
+                .addClass("d-flex")
+                .addClass("left-margin")
+                .addClass("nav-row")
+                .click(() => this.navigateTo(key));
+
+            const icon = $("<i/>")
+                .addClass("bi")
+                .addClass(value.icon)
+                .addClass("align-self-center");
             const navLink = $("<a/>", {
                 text: value.header,
                 href: "#"
             })
                 .addClass("nav-link")
                 .addClass("active")
-                .addClass("link")
-                .click(() => this.navigateTo(key));
-            navItem.append(navLink);
+                .addClass("link");
+            navHolder.append(icon);
+            navHolder.append(navLink);
+            navItem.append(navHolder);
             navbar.append(navItem);
         }
     }

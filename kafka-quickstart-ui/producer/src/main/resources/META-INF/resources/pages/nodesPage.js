@@ -1,5 +1,6 @@
 import {doPost, errorPopUp} from "../web/web.js";
 import {createTableItem} from "../util/contentManagement.js";
+import {toggleSpinner} from "../util/spinner.js";
 
 export default class NodesPage {
     constructor(containerId) {
@@ -11,7 +12,6 @@ export default class NodesPage {
         });
     }
 
-    // TODO: stub. must be implemented by all pages
     open() {
         const req = {
             action: "getInfo", key: "0", value: "0"
@@ -20,12 +20,12 @@ export default class NodesPage {
             let that = this;
             setTimeout(function () {
                 that.updateInfo(data);
-                that.toggleSpinner();
+                toggleSpinner(that.containerId);
             }, 2000);
         }, data => {
             errorPopUp("Error getting Kafka info: ", data);
         });
-        this.toggleSpinner();
+        toggleSpinner(this.containerId);
     }
 
     updateInfo(data) {
@@ -45,27 +45,4 @@ export default class NodesPage {
             clusterNodesTable.append(tableRow);
         }
     }
-
-    toggleSpinner() {
-        const spinnerId = "#page-load-spinner";
-        const pageId = "#" + this.containerId;
-        let first;
-        let second;
-
-        if ($(spinnerId).hasClass("shown")) {
-            first = pageId;
-            second = spinnerId;
-        } else {
-            second = pageId;
-            first = spinnerId;
-        }
-
-        $(first)
-            .removeClass("hidden")
-            .addClass("shown");
-        $(second)
-            .addClass("hidden")
-            .removeClass("shown");
-    }
-
 }
