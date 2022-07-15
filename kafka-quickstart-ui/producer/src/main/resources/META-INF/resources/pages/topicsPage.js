@@ -19,8 +19,17 @@ export default class TopicsPage {
     registerButtonHandlers() {
         $("#create-topic-btn").click(() => {
             this.createTopic(this.onTopicsLoaded, this.onTopicsFailed);
-            //TODO: clean input
+            $('#create-topic-modal').modal('hide');
+        })
+
+        $("#open-create-topic-modal-btn").click(() => {
+            $('#create-topic-modal').modal('show');
         });
+
+        $('.close-modal-btn').click(() => {
+            $('#create-topic-modal').modal('hide');
+        });
+
     }
 
     open() {
@@ -43,6 +52,7 @@ export default class TopicsPage {
             let d = data[i];
             tableRow.append(createTableItem(d.name));
             tableRow.append(createTableItem(d.topicId));
+            tableRow.append(createTableItem(d.partitionsCount));
             tableRow.append(createTableItem(("" + d.nmsg)));
 
             let deleteBtn = createPrimaryBtn("Delete", () => {
@@ -67,12 +77,19 @@ export default class TopicsPage {
     }
 
     createTopic(onTopicsLoaded, onTopicsFailed) {
-        const topicName = document.getElementById("create_topic").value;
+        const topicName = $("#topic-name-modal-input").val();
+        const partitions = $("#partitions-modal-input").val();
+        const replications = $("#replications-modal-input").val();
+
         const req = {
-            action: "createTopic", key: topicName, value: "0", test: "1"
+            action: "createTopic",
+            topicName: topicName,
+            partitions: partitions,
+            replications: replications
         };
-        doPost(req, onTopicsLoaded, onTopicsFailed);
+        doPost(req, () => this.requestTopics(this.onTopicsLoaded, this.onTopicsFailed), onTopicsFailed);
     }
+    //TODO: add pagination here
 
     deleteTopic(topicName, onTopicsLoaded, onTopicsFailed) {
         const req = {
