@@ -91,6 +91,28 @@
                 min-height: calc(100vh - 210px);
             }
 
+            .table-hover:hover {
+                cursor: pointer;
+            }
+
+            .pointer {
+                cursor: pointer;
+            }
+
+            .no-hover {
+                background-color: white;
+                cursor: default;
+            }
+
+            .no-hover:hover {
+                background-color: white !important;
+                cursor: default;
+            }
+
+            .icon-rotated {
+                transform: rotate(90deg);
+            }
+
         </style>
 
     </head>
@@ -253,7 +275,12 @@
         </div>
 
         <div id="nav-menu-panel" class="col-md-2" style="background-color:#005fff; color:#ffffff">
-            <h3 class="top-margin left-margin">Kafka dev UI</h3>
+            <div id="navbar-header" class="d-flex flex-row pointer">
+                <a href="#" class="navbar-brand align-self-center top-margin" style="margin-right: 0.5em">
+                    <img id="navbar-logo" src="/assets/kafka-logo.png" height="28px">
+                </a>
+                <h3 class="top-margin">Kafka dev UI</h3>
+            </div>
             <ul class="nav flex-column top-margin" id="navbar-list">
             </ul>
         </div>
@@ -370,7 +397,7 @@
             </div>
             <div id="consumer-groups-page">
                 <div class="card flex-fill">
-                    <table class="table" id="consumer-groups-table">
+                    <table class="table table-hover" id="consumer-groups-table">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">State</th>
@@ -378,6 +405,23 @@
                                 <th scope="col">Coordinator</th>
                                 <th scope="col">Protocol</th>
                                 <th scope="col">Members</th>
+                                <th scope="col">Lag(Sum)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="consumer-groups-details-page">
+                <div class="card flex-fill">
+                    <table class="table table-hover" id="consumer-group-details-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Member ID</th>
+                                <th scope="col">Host</th>
+                                <th scope="col">Partitions</th>
                                 <th scope="col">Lag(Sum)</th>
                             </tr>
                         </thead>

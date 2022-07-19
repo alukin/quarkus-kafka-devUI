@@ -1,7 +1,9 @@
+import {logo} from "../config.js"
 import MessagesPage from "./messagesPage.js";
 import TopicsPage from "./topicsPage.js";
 import SchemaPage from "./schemaPage.js";
 import ConsumerGroupPage from "./consumerGroupPage.js";
+import ConsumerGroupDetailsPage from "./consumerGroupDetailsPage.js";
 import AccessControlListPage from "./accessControlListPage.js";
 import NodesPage from "./nodesPage.js";
 
@@ -9,6 +11,7 @@ export const pages = {
     TOPICS: "topics-page",
     SCHEMA: "schema-page",
     CONSUMER_GROUPS: "consumer-groups-page",
+    CONSUMER_GROUPS_DETAILS: "consumer-groups-details-page",
     ACCESS_CONTROL_LIST: "access-control-list-page",
     NODES: "nodes-page",
     TOPIC_MESSAGES: "topic-messages-page",
@@ -36,7 +39,7 @@ export default class Navigator {
         [pages.CONSUMER_GROUPS]: {
             header: "Consumer groups",
             showInNavbar: true,
-            instance: new ConsumerGroupPage(pages.CONSUMER_GROUPS),
+            instance: new ConsumerGroupPage(this, pages.CONSUMER_GROUPS),
             icon: "bi-inboxes"
         },
         [pages.ACCESS_CONTROL_LIST]: {
@@ -56,6 +59,12 @@ export default class Navigator {
             showInNavbar: false,
             instance: new MessagesPage(pages.TOPIC_MESSAGES),
             parent: pages.TOPICS
+        },
+        [pages.CONSUMER_GROUPS_DETAILS]: {
+            header: "Consumer group details",
+            showInNavbar: false,
+            instance: new ConsumerGroupDetailsPage(pages.CONSUMER_GROUPS_DETAILS),
+            parent: pages.CONSUMER_GROUPS
         }
     };
 
@@ -69,7 +78,8 @@ export default class Navigator {
             const value = this.allPages[key];
             if (!value.showInNavbar) continue;
             const navItem = $("<li/>")
-                .addClass("nav-item");
+                .addClass("nav-item")
+                .addClass("pointer");
 
             const navHolder = $("<div/>")
                 .addClass("d-flex")
@@ -124,6 +134,10 @@ export default class Navigator {
     open(pageId, params) {
         const value = this.allPages[pageId];
         value.instance.open(params);
+        $("#navbar-logo")
+            .attr("src", logo);
+        $("#navbar-header")
+            .click(() => this.navigateToDefaultPage());
     }
 
     navigateBreadcrumb(page, params) {

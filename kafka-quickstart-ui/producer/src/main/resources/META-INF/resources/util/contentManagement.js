@@ -17,3 +17,9 @@ export function createPrimaryBtn(text, onClick) {
         .addClass("right-margin")
         .click(onClick);
 }
+
+export function createTableHead(title){
+    return $("<th/>")
+        .attr("scope", "col")
+        .text(title);
+}
