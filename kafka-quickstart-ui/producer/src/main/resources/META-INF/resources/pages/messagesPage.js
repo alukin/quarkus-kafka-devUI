@@ -30,10 +30,10 @@ export default class MessagesPage {
         $('#send-msg-btn').click(this.createMessage.bind(this));
 
         $('.close-modal-btn').click(() => {
-            $('#create-msg-modal').modal('hide');
+            $('.modal').modal('hide');
             this.setActiveTab(MODAL_KEY_TAB);
         });
-
+        // TODO: replace svg icons with bootstrap icon font.
         $('#msg-page-sorting-select').multiselect({});
 
         $('#msg-page-partition-select').multiselect({

@@ -62,7 +62,9 @@ public class KafkaDevUiResource {
                         break;
                     case "deleteTopic":
                         res = adminClient.deleteTopic(key);
-                        message = webUtils.toJson(webUtils.getTopics());
+//                        message = webUtils.toJson(webUtils.getTopics());
+                        message = "{}";
+                        res = true;
                         break;
                     case "getTopics":
                         message = webUtils.toJson(webUtils.getTopics());

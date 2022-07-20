@@ -1,4 +1,3 @@
-import {logo} from "../config.js"
 import MessagesPage from "./messagesPage.js";
 import TopicsPage from "./topicsPage.js";
 import SchemaPage from "./schemaPage.js";
@@ -6,6 +5,7 @@ import ConsumerGroupPage from "./consumerGroupPage.js";
 import ConsumerGroupDetailsPage from "./consumerGroupDetailsPage.js";
 import AccessControlListPage from "./accessControlListPage.js";
 import NodesPage from "./nodesPage.js";
+import {createIcon} from "../util/contentManagement.js";
 
 export const pages = {
     TOPICS: "topics-page",
@@ -79,6 +79,7 @@ export default class Navigator {
             if (!value.showInNavbar) continue;
             const navItem = $("<li/>")
                 .addClass("nav-item")
+                .addClass("left-padding")
                 .addClass("pointer");
 
             const navHolder = $("<div/>")
@@ -87,9 +88,7 @@ export default class Navigator {
                 .addClass("nav-row")
                 .click(() => this.navigateTo(key));
 
-            const icon = $("<i/>")
-                .addClass("bi")
-                .addClass(value.icon)
+            const icon = createIcon(value.icon)
                 .addClass("align-self-center");
             const navLink = $("<a/>", {
                 text: value.header,
@@ -134,8 +133,6 @@ export default class Navigator {
     open(pageId, params) {
         const value = this.allPages[pageId];
         value.instance.open(params);
-        $("#navbar-logo")
-            .attr("src", logo);
         $("#navbar-header")
             .click(() => this.navigateToDefaultPage());
     }
@@ -161,9 +158,6 @@ export default class Navigator {
             nextPage = this.allPages[pageId];
             i++;
         }
-
-        const rootLi = this.createBreadcrumbItem("Kafka dev UI", pages.DEFAULT, params);
-        breadcrumb.prepend(rootLi);
     }
 
     createBreadcrumbItem(text, pageId, isActive, params) {

@@ -23,3 +23,9 @@ export function createTableHead(title){
         .attr("scope", "col")
         .text(title);
 }
+
+export function createIcon(iconClass){
+    return $("<i/>")
+        .addClass("bi")
+        .addClass(iconClass);
+}
