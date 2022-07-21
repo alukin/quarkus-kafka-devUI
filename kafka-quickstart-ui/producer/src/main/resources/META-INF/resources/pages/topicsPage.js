@@ -1,5 +1,5 @@
 import {doPost, errorPopUp} from "../web/web.js";
-import {createPrimaryBtn, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
+import {createIcon, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
 import {pages} from "./navigator.js";
 
 export default class TopicsPage {
@@ -27,12 +27,18 @@ export default class TopicsPage {
         });
 
         $('.close-modal-btn').click(() => {
-            $('#create-topic-modal').modal('hide');
+            $('.modal').modal('hide');
         });
 
+        $("#delete-topic-btn").click(() => {
+            const currentTopic = window.currentContext.topicName;
+            this.deleteTopic(currentTopic, this.deleteTopicRow, this.onTopicsFailed)
+            $("#delete-topic-modal").modal("hide");
+        });
     }
 
     open() {
+        window.currentContext = {};
         this.requestTopics(this.onTopicsLoaded, this.onTopicsFailed);
     }
 
@@ -55,14 +61,22 @@ export default class TopicsPage {
             tableRow.append(createTableItem(d.partitionsCount));
             tableRow.append(createTableItem(("" + d.nmsg)));
 
-            let deleteBtn = createPrimaryBtn("Delete", () => {
-                this.deleteTopic(d.name, this.onTopicsLoaded, this.onTopicsFailed)
-            });
-            let messagesBtn = createPrimaryBtn("Messages", () => {
+            const deleteIcon = createIcon("bi-trash-fill");
+            const deleteBtn = $("<btn/>")
+                .addClass("btn")
+                .click((event) => {
+                    window.currentContext.topicName = d.name;
+                    $("#delete-topic-modal").modal("show");
+                    $("#delete-topic-name-span").text(d.name);
+                    event.stopPropagation();
+                })
+                .append(deleteIcon);
+
+
+            tableRow.click(() => {
                 self.navigator.navigateTo(pages.TOPIC_MESSAGES, [d.name]);
             });
             const controlHolder = $("<div/>")
-                .append(messagesBtn)
                 .append(deleteBtn);
             tableRow.append(createTableItemHtml(controlHolder));
 
@@ -89,12 +103,18 @@ export default class TopicsPage {
         };
         doPost(req, () => this.requestTopics(this.onTopicsLoaded, this.onTopicsFailed), onTopicsFailed);
     }
-    //TODO: add pagination here
 
-    deleteTopic(topicName, onTopicsLoaded, onTopicsFailed) {
+    // TODO: add pagination here
+    deleteTopic(topicName, onTopicsDeleted, onTopicsFailed) {
         const req = {
-            action: "deleteTopic", key: topicName, value: "0"
+            action: "deleteTopic",
+            key: topicName
         };
-        doPost(req, onTopicsLoaded, onTopicsFailed);
+        doPost(req, onTopicsDeleted, onTopicsFailed);
+    }
+
+    deleteTopicRow(data) {
+        const topicName = window.currentContext.topicName;
+        $("#topics-table > tbody > tr > td:contains('" + topicName + "')").parent().remove()
     }
 }

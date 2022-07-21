@@ -1,4 +1,4 @@
-import {createTableHead, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
+import {createIcon, createTableHead, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
 
 export default class ConsumerGroupDetailsPage {
     constructor(containerId) {
@@ -21,14 +21,12 @@ export default class ConsumerGroupDetailsPage {
             let tableRow = $("<tr/>");
 
             if (d.partitions.length > 0) {
-                const arrowIcon = $("<i/>")
-                    .addClass("bi")
-                    .addClass("bi-chevron-right")
+                const chevronIcon = createIcon("bi-chevron-right")
                     .addClass("rotate-icon");
                 const arrowHolder = $("<div/>")
                     .addClass("d-flex")
                     .addClass("justify-content-center")
-                    .append(arrowIcon);
+                    .append(chevronIcon);
 
                 tableRow
                     .addClass("pointer")
