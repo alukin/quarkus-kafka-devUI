@@ -9,12 +9,12 @@
 
         <style>
             html {
-                min-height: 100vh;
+                min-height: 90vh;
                 min-width: 100vh;
             }
 
             body {
-                min-height: 100vh;
+                min-height: 90vh;
                 min-width: 100vh;
             }
 
@@ -32,7 +32,7 @@
 
             .content-holder {
                 height: auto;
-                min-height: 100vh;
+                min-height: 90vh;
             }
 
             .link {
@@ -84,7 +84,7 @@
                 color: #e9ecef;
             }
 
-            .nav-item:hover {
+            #navbar-list > .nav-item:hover {
                 background-color: #005fff;
                 color: #e9ecef;
             }
@@ -98,7 +98,7 @@
             }
 
             .page {
-                min-height: calc(100vh - 210px);
+                min-height: calc(100vh - 135px);
             }
 
             .table-hover:hover {
@@ -140,8 +140,8 @@
 
             .float-plus-btn {
                 position: fixed;
-                bottom: 50px;
-                right: 50px;
+                bottom: 60px;
+                right: 60px;
                 border-radius: 100%;
                 height: 50px;
                 width: 50px;
@@ -167,8 +167,27 @@
                 padding: 0 0 0 5px;
             }
 
-            .bi:hover {
+            .bi-trash-fill:hover {
                 color: #007bff;
+            }
+
+            .collapse-content {
+                max-width: 1200px;
+            }
+
+            .thead-multiselect {
+                background-color: #343a40;
+                color: white;
+                border: 0px;
+                font-weight: bold;
+            }
+
+            .thead-text {
+                color: white;
+            }
+
+            #msg-table-holder {
+                min-width: 100%;
             }
         </style>
 
@@ -265,22 +284,7 @@
                                     <input type="text" class="form-control" placeholder="Key"/>
                                     <input type="text" class="form-control" placeholder="Value"/>
                                     <span class="input-group-text" id="basic-addon1">
-                                      <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              width="16"
-                                              height="16"
-                                              fill="currentColor"
-                                              class="bi bi-trash"
-                                              viewBox="0 0 16 16"
-                                      >
-              <path
-                      d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
-              ></path>
-              <path
-                      fill-rule="evenodd"
-                      d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-              ></path>
-            </svg>
+                                        <i class="bi bi-trash"></i>
                                     </span>
                                 </div>
                                 <div class="d-flex justify-content-end top-margin">
@@ -355,33 +359,33 @@
                 aria-hidden="true"
                 style="display: none"
         >
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Delete topic</h5>
-                    <button
-                            class="close-modal-btn btn fa fa-close"
-                            type="button"
-                            aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body container">
-                    <span>Are you sure you want to delete topic </span>
-                    <b><span id="delete-topic-name-span"></span></b>
-                    <span>? </span>
-                </div>
-                <div class="modal-footer">
-                    <button
-                            type="button"
-                            class="btn btn-secondary close-modal-btn"
-                            data-bs-dismiss="modal"
-                    >Close
-                    </button>
-                    <button type="button" class="btn btn-danger" id="delete-topic-btn">Delete topic
-                    </button>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete topic</h5>
+                        <button
+                                class="close-modal-btn btn fa fa-close"
+                                type="button"
+                                aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body container">
+                        <span>Are you sure you want to delete topic </span>
+                        <b><span id="delete-topic-name-span"></span></b>
+                        <span>? </span>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-secondary close-modal-btn"
+                                data-bs-dismiss="modal"
+                        >Close
+                        </button>
+                        <button type="button" class="btn btn-danger" id="delete-topic-btn">Delete topic
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
 
         <div id="nav-menu-panel" class="col-md-2" style="background-color:#e9ecef; color:#005fff">
@@ -412,55 +416,22 @@
             </div>
             <div id="topic-messages-page" class="flex-column">
                 <div id="topic-msg-content" class="card flex-fill top-margin">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav mr-auto">
-                                <li class="nav-item right-margin d-flex flex-row align-self-end">
-                                    <label for="msg-page-partition-select"
-                                           class="right-margin top-margin">Partitions:</label>
-                                    <select id="msg-page-partition-select" class="custom-select" multiple="multiple">
-                                        <option>0</option>
-                                    </select>
-                                </li>
-                                <li class="nav-item right-margin d-flex flex-row align-self-end">
-                                    <label for="msg-page-sorting-select" class="right-margin top-margin">Offset:</label>
-                                    <select id="msg-page-sorting-select" class="custom-select">
-                                        <option value="NEW_FIRST">Newest</option>
-                                        <option value="OLD_FIRST">Oldest</option>
-                                    </select>
-                                </li>
-                            </ul>
-                            <div class="d-flex">
-                                <button class="btn my-2 my-sm-0"
-                                        type="button"
-                                        id="publish-msg-modal-btn"
-                                >
-                                    <i class="bi bi-envelope-plus"></i>
-                                    Publish message
-                                </button>
-                                <button class="btn my-2 my-sm-0"
-                                        id="reload-msg-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                         class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                              d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                                    </svg>
-                                    Reload
-                                </button>
-                            </div>
-                        </div>
-                    </nav>
                     <div class="page d-flex align-content-center justify-content-center">
                         <div id="msg-table-holder" class="align-items-start">
                             <table class="table" id="msg-table">
                                 <thead class="thead-dark">
                                     <tr>
+                                        <th scope="col"></th>
                                         <th scope="col">Offset</th>
-                                        <th scope="col">Partition</th>
-                                        <th scope="col">Timestamp</th>
+                                        <th scope="col" class="pointer">
+                                            <select id="msg-page-partition-select" class="custom-select" multiple="multiple">
+                                                <option>0</option>
+                                            </select>
+                                        </th>
+                                        <th scope="col" class="pointer" id="timestamp-sort-header">Timestamp <i id="timestamp-sort-icon" class="bi bi-chevron-double-down"></i></th>
                                         <th scope="col">Key</th>
                                         <th scope="col">Value</th>
+                                        <th><btn id="reload-msg-btn" class="btn"><i class="bi bi-arrow-clockwise thead-text"></i></btn></th>
                                     </tr>
                                 </thead>
                                 <tbody id="msg-table-body">
@@ -484,6 +455,9 @@
                         <li class="page-item next"><a class="page-link" href="#">Next</a></li>
                     </ul>
                 </nav>
+                <button id="open-create-msg-modal-btn" class="btn btn-primary float-plus-btn"><i
+                        class="bi bi-plus"> </i>
+                </button>
             </div>
             <div id="schema-page">
                 Schema<br>

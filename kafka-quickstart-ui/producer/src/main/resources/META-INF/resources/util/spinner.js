@@ -1,14 +1,14 @@
 export function toggleSpinner(containerId, spinnerContainerId) {
     const spinnerId = spinnerContainerId === undefined ? "#page-load-spinner" : "#" + spinnerContainerId;
-    const pageId = "#" + containerId;
+    const toggleContainerId = "#" + containerId;
     let first;
     let second;
 
     if ($(spinnerId).hasClass("shown")) {
-        first = pageId;
+        first = toggleContainerId;
         second = spinnerId;
     } else {
-        second = pageId;
+        second = toggleContainerId;
         first = spinnerId;
     }
 

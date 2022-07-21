@@ -20,6 +20,9 @@ export default class TopicsPage {
         $("#create-topic-btn").click(() => {
             this.createTopic(this.onTopicsLoaded, this.onTopicsFailed);
             $('#create-topic-modal').modal('hide');
+            $('#topic-name-modal-input').val("");
+            $('#partitions-modal-input').val("");
+            $('#replications-modal-input').val("");
         })
 
         $("#open-create-topic-modal-btn").click(() => {

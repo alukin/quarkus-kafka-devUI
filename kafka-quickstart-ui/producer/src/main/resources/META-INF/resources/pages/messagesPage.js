@@ -1,14 +1,15 @@
 import {doPost, errorPopUp} from "../web/web.js";
 import timestampToFormattedString from "../util/datetimeUtil.js";
-import {createTableItem, createTableItemHtml} from "../util/contentManagement.js";
+import {CollapseRow, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
 import {toggleSpinner} from "../util/spinner.js";
 
 const MODAL_KEY_TAB = "header-key-tab-pane";
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 const NEW_FIRST = "NEW_FIRST";
 const OLD_FIRST = "OLD_FIRST";
 const MESSAGES_SPINNER = "message-load-spinner";
-const MESSAGES_TABLE = "msg-table-holder";
+const MESSAGES_TABLE_BODY = "msg-table-body";
+const MESSAGES_TABLE_HOLDER = "msg-table-holder";
 
 export default class MessagesPage {
     constructor(containerId) {
@@ -22,7 +23,7 @@ export default class MessagesPage {
     }
 
     registerButtonHandlers() {
-        $("#publish-msg-modal-btn").click(() => {
+        $("#open-create-msg-modal-btn").click(() => {
             $('#create-msg-modal').modal('show');
             this.setActiveTab(MODAL_KEY_TAB);
         });
@@ -33,14 +34,20 @@ export default class MessagesPage {
             $('.modal').modal('hide');
             this.setActiveTab(MODAL_KEY_TAB);
         });
-        // TODO: replace svg icons with bootstrap icon font.
-        $('#msg-page-sorting-select').multiselect({});
 
         $('#msg-page-partition-select').multiselect({
-            includeSelectAllOption: true
+            buttonClass: 'thead-multiselect',
+            includeSelectAllOption: true,
+            filterPlaceholder: 'Partitions',
+            selectAllText: 'Select All',
+            nonSelectedText: 'Partitions',
+            buttonText: function () {
+                return 'Partitions';
+            }
         });
 
-        $("#msg-page-sorting-select").change(() => {
+        $("#timestamp-sort-header").click(() => {
+            this.toggleSorting();
             window.currentContext.currentPage = 1;
             this.loadMessages();
         });
@@ -68,19 +75,34 @@ export default class MessagesPage {
         });
     }
 
+    toggleSorting() {
+        if (currentContext.currentSorting === NEW_FIRST) {
+            currentContext.currentSorting = OLD_FIRST;
+            $("#timestamp-sort-icon")
+                .removeClass("bi-chevron-double-down")
+                .addClass("bi-chevron-double-up");
+        } else {
+            currentContext.currentSorting = NEW_FIRST;
+            $("#timestamp-sort-icon")
+                .addClass("bi-chevron-double-down")
+                .removeClass("bi-chevron-double-up");
+        }
+    }
+
     loadMessages() {
-        toggleSpinner(MESSAGES_TABLE, MESSAGES_SPINNER);
+        toggleSpinner(MESSAGES_TABLE_HOLDER, MESSAGES_SPINNER);
         this.getPage(currentContext.currentPage, this.onMessagesLoaded, this.onMessagesFailed);
         this.redrawPageNav();
     }
 
     open(params) {
-        toggleSpinner(MESSAGES_TABLE, MESSAGES_SPINNER);
+        toggleSpinner(MESSAGES_TABLE_HOLDER, MESSAGES_SPINNER);
         const topicName = params[0];
         window.currentContext = {
             topicName: topicName,
             currentPage: 1, //always start with first page
-            pagesCache: new Map()
+            pagesCache: new Map(),
+            currentSorting: NEW_FIRST
         };
 
         this.clearMessageTable();
@@ -203,10 +225,14 @@ export default class MessagesPage {
         const messages = data.messages;
         this.clearMessageTable();
 
-        let msgTableBody = $('#msg-table-body');
+        let msgTableBody = $("#" + MESSAGES_TABLE_BODY);
 
         for (let i = 0; i < messages.length; i++) {
             let tableRow = $("<tr/>");
+            const groupId = "group-" + window.crypto.randomUUID();
+            const collapseRow = new CollapseRow(groupId);
+            tableRow.append(createTableItemHtml(collapseRow.arrow));
+
             tableRow.append(createTableItem(messages[i].offset));
             tableRow.append(createTableItem(messages[i].partition));
             tableRow.append(createTableItem(timestampToFormattedString(messages[i].timestamp)));
@@ -217,34 +243,23 @@ export default class MessagesPage {
             if (value.length < maxMsgLength) {
                 tableRow.append(createTableItem(value));
             } else {
-                // FIXME: need to add an expand button + make each column take fixed width.
-                // We need to create an expanding area, if message is too long.
-                const wrapDiv = $("<div/>")
-                    .addClass("d-flex")
-                    .addClass("flex-row");
-
-                const text = $("<p/>")
-                    .text(value.slice(0, maxMsgLength));
-                const dots = $("<span/>")
-                    .addClass("text-shown")
-                    .addClass("dots")
-                    .text("...");
-                const hiddenText = $("<span/>")
-                    .addClass("hidden")
-                    .addClass("hidden-text")
-                    .text(value.slice(50, value.length));
-                text.append(dots)
-                    .append(hiddenText);
-                wrapDiv.append(text);
-                const td = createTableItemHtml(text)
-                    .click(this.toggleContent());
-                tableRow.append(td);
+                tableRow.append(createTableItem(value.slice(0, maxMsgLength) + "..."));
             }
+            tableRow.append(createTableItem());
+            tableRow
+                .addClass("pointer")
+                .click(collapseRow.collapse);
             msgTableBody.append(tableRow);
+            msgTableBody.append(collapseRow.getCollapseContent(tableRow.children().length, this.createMessageCollapseItem(value)));
         }
 
         currentContext.lastOffset = data.partitionOffset;
-        toggleSpinner(MESSAGES_TABLE, MESSAGES_SPINNER);
+        toggleSpinner(MESSAGES_TABLE_HOLDER, MESSAGES_SPINNER);
+    }
+
+    createMessageCollapseItem(fullMessage) {
+        return $("<div/>")
+            .text(fullMessage);
     }
 
     toggleContent() {
@@ -308,6 +323,8 @@ export default class MessagesPage {
         $('#create-msg-modal').modal('hide');
         $('#msg-value-textarea').val("");
         $('#msg-key-textarea').val("");
+        $('#msg-modal-partition-select').val("any");
+        $('#msg-modal-type-select').val("text");
 
         $('body').removeClass('modal-open');
         $('.modal-backdrop').remove();
@@ -365,7 +382,7 @@ export default class MessagesPage {
             let li = $("<li/>")
                 .addClass("page-item")
                 .click(() => {
-                    toggleSpinner(MESSAGES_TABLE, MESSAGES_SPINNER);
+                    toggleSpinner(MESSAGES_TABLE_HOLDER, MESSAGES_SPINNER);
                     currentContext.currentPage = p;
                     this.getPage(p, this.onMessagesLoaded, this.onMessagesFailed);
                     this.redrawPageNav();
@@ -427,7 +444,7 @@ export default class MessagesPage {
     }
 
     getOrder() {
-        return $("#msg-page-sorting-select").val();
+        return currentContext.currentSorting;
     }
 
 }

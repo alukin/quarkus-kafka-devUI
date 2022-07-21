@@ -1,4 +1,4 @@
-import {createIcon, createTableHead, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
+import {CollapseRow, createTableHead, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
 
 export default class ConsumerGroupDetailsPage {
     constructor(containerId) {
@@ -19,26 +19,10 @@ export default class ConsumerGroupDetailsPage {
             const groupId = "group-" + window.crypto.randomUUID();
 
             let tableRow = $("<tr/>");
-
+            let collapseRow;
             if (d.partitions.length > 0) {
-                const chevronIcon = createIcon("bi-chevron-right")
-                    .addClass("rotate-icon");
-                const arrowHolder = $("<div/>")
-                    .addClass("d-flex")
-                    .addClass("justify-content-center")
-                    .append(chevronIcon);
-
-                tableRow
-                    .addClass("pointer")
-                    .click(() => {
-                        $("#" + groupId).toggle();
-                        if (arrowHolder.hasClass("icon-rotated")) {
-                            arrowHolder.removeClass("icon-rotated");
-                        } else {
-                            arrowHolder.addClass("icon-rotated");
-                        }
-                    })
-                tableRow.append(createTableItemHtml(arrowHolder));
+                collapseRow = new CollapseRow(groupId);
+                tableRow.append(createTableItemHtml(collapseRow.arrow));
             } else {
                 tableRow.append(createTableItem(""));
             }
@@ -56,43 +40,43 @@ export default class ConsumerGroupDetailsPage {
             consumerGroupsTable.append(tableRow);
 
             if (d.partitions.length > 0) {
-                const collapseInfo = $("<tr/>")
-                    .attr("id", groupId)
-                    .addClass("collapse");
-
-                const collapseContent = $("<table/>")
-                    .addClass("table")
-                    .addClass("table-sm")
-                    .addClass("no-hover");
-
-                const headers = $("<tr/>")
-                    .addClass("no-hover")
-                    .append(createTableHead("Topic"))
-                    .append(createTableHead("Partition"))
-                    .append(createTableHead("Lag"));
-                const head = $("<thead/>")
-                    .append(headers);
-
-                const body = $("<tbody/>");
-                for (let partition of d.partitions) {
-                    const row = $("<tr/>")
-                        .addClass("no-hover");
-                    row.append(createTableItemHtml(partition.topic))
-                    row.append(createTableItemHtml(partition.partition))
-                    row.append(createTableItemHtml(partition.lag))
-                    body.append(row);
-                }
-
-                collapseContent.append(head);
-                collapseContent.append(body);
-
-                collapseInfo.append(createTableItemHtml(collapseContent)
-                    .addClass("no-hover")
-                    .attr("colspan", tableRow.children().length)
-                );
-                consumerGroupsTable.append(collapseInfo);
+                const content = this.createConsumerGroupCollapseInfo(d);
+                tableRow
+                    .addClass("pointer")
+                    .click(collapseRow.collapse);
+                consumerGroupsTable.append(collapseRow.getCollapseContent(tableRow.children().length, content));
             }
         }
+    }
+
+    createConsumerGroupCollapseInfo(dataItem) {
+        const collapseContent = $("<table/>")
+            .addClass("table")
+            .addClass("table-sm")
+            .addClass("no-hover");
+
+        const headers = $("<tr/>")
+            .addClass("no-hover")
+            .append(createTableHead("Topic"))
+            .append(createTableHead("Partition"))
+            .append(createTableHead("Lag"));
+        const head = $("<thead/>")
+            .append(headers);
+
+        const body = $("<tbody/>");
+        for (let partition of dataItem.partitions) {
+            const row = $("<tr/>")
+                .addClass("no-hover");
+            row.append(createTableItemHtml(partition.topic))
+            row.append(createTableItemHtml(partition.partition))
+            row.append(createTableItemHtml(partition.lag))
+            body.append(row);
+        }
+
+        collapseContent.append(head);
+        collapseContent.append(body);
+
+        return collapseContent;
     }
 
 }
