@@ -167,7 +167,31 @@
                                     <fileMappers>
                                         <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
                                     </fileMappers>
-                                </artifactItem>                                
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.webjars.npm</groupId>
+                                    <artifactId>bootstrap-icons</artifactId>
+                                    <version>1.9.1</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/css/</outputDirectory>
+                                    <includes>**/font/bootstrap-icons.css</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.webjars.npm</groupId>
+                                    <artifactId>bootstrap-icons</artifactId>
+                                    <version>1.9.1</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/META-INF/resources/${path.kafkaui}/css/fonts/</outputDirectory>
+                                    <includes>**/font/fonts/</includes>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
                                 <!-- JQuery -->
                                 <artifactItem>
                                     <groupId>org.webjars</groupId>
