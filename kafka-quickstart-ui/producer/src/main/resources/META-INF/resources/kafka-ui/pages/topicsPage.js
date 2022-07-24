@@ -1,5 +1,5 @@
 import {doPost, errorPopUp} from "../web/web.js";
-import {createIcon, createTableItem, createTableItemHtml} from "../util/contentManagement.js";
+import {createIcon, createTableItem, createTableItemHtml, hideItem, showItem} from "../util/contentManagement.js";
 import {pages} from "./navigator.js";
 
 export default class TopicsPage {
@@ -16,8 +16,20 @@ export default class TopicsPage {
         });
     }
 
+    open() {
+        window.currentContext = {};
+        this.requestTopics(this.onTopicsLoaded, this.onTopicsFailed);
+    }
+
     registerButtonHandlers() {
+
+        const topicNameInput = $("#topic-name-modal-input");
         $("#create-topic-btn").click(() => {
+            if (!this.validateTopicName(topicNameInput.val())) {
+                this.showErrorIfInvalid(topicNameInput.val(), this.validateTopicName, topicNameValidationErrorBox);
+                return;
+            }
+
             this.createTopic(this.onTopicsLoaded, this.onTopicsFailed);
             $('#create-topic-modal').modal('hide');
             $('#topic-name-modal-input').val("");
@@ -26,11 +38,15 @@ export default class TopicsPage {
         })
 
         $("#open-create-topic-modal-btn").click(() => {
+            this.loadNodesCount();
             $('#create-topic-modal').modal('show');
         });
 
         $('.close-modal-btn').click(() => {
-            $('.modal').modal('hide');
+            hideItem($(".modal"));
+            hideItem($("#topic-creation-validation-msg-box"));
+            hideItem($("#topic-name-validation-msg"));
+            hideItem($("#replication-validation-msg"));
         });
 
         $("#delete-topic-btn").click(() => {
@@ -38,16 +54,65 @@ export default class TopicsPage {
             this.deleteTopic(currentTopic, this.deleteTopicRow, this.onTopicsFailed)
             $("#delete-topic-modal").modal("hide");
         });
+
+        const topicNameValidationErrorBox = $("#topic-name-validation-msg");
+        topicNameInput.keyup(() => this.showErrorIfInvalid(topicNameInput.val(), this.validateTopicName, topicNameValidationErrorBox));
+        topicNameInput.change(() => this.showErrorIfInvalid(topicNameInput.val(), this.validateTopicName, topicNameValidationErrorBox));
+
+        const replicationInput = $("#replications-modal-input");
+        replicationInput.keyup(() => {
+            const value = replicationInput.val();
+            this.showErrorIfInvalid(value, this.validateReplicationFactor, $("#replication-validation-msg"));
+        });
     }
 
-    open() {
-        window.currentContext = {};
-        this.requestTopics(this.onTopicsLoaded, this.onTopicsFailed);
+    loadNodesCount() {
+        const req = {
+            action: "getInfo"
+        };
+        doPost(req, (data) => {
+            window.currentContext.nodesCount = data.clusterInfo.nodes.length;
+        }, data => {
+            errorPopUp("Could not obtain nodes count.");
+        });
+    }
+
+    showErrorIfInvalid(value, validationFunction, errBoxSelector) {
+        const valid = validationFunction(value);
+        if (!valid) {
+            showItem($("#topic-creation-validation-msg-box"));
+            showItem(errBoxSelector);
+            $("#create-topic-btn")
+                .addClass("disabled")
+                .attr("disabled", true);
+        } else {
+            hideItem(errBoxSelector);
+            const topicMsgValidationBoxChildren = $("#topic-creation-validation-msg-box span");
+            const allChildrenHidden = topicMsgValidationBoxChildren
+                .filter((x) => !$(x).hasClass("hidden"))
+                .length > 0;
+            if (allChildrenHidden) {
+                hideItem($("#topic-creation-validation-msg-box"));
+                $("#create-topic-btn")
+                    .removeClass("disabled")
+                    .attr("disabled", false);
+            }
+        }
+    }
+
+    validateTopicName(name) {
+        const legalChars = /^[a-zA-Z\d\.\_]+$/;
+        const maxNameLength = 255;
+        return legalChars.test(name) && name.length < maxNameLength;
+    }
+
+    validateReplicationFactor(replicationFactor) {
+        return currentContext.nodesCount >= replicationFactor;
     }
 
     requestTopics(onTopicsLoaded, onTopicsFailed) {
         const req = {
-            action: "getTopics", key: "0", value: "0"
+            action: "getTopics"
         };
         doPost(req, onTopicsLoaded, onTopicsFailed);
     }

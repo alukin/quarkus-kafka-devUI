@@ -325,9 +325,9 @@
                         ></button>
                     </div>
                     <div class="modal-body container">
-                        <div id="topic-creation-validation-msg-box" class="alert alert-danger hidden" role="alert">
-                            <span id="topic-name-validation-msg" class="hidden">Topic name should contain</span><br>
-                            <span id="replication-validation-msg" class="hidden"></span>
+                        <div id="topic-creation-validation-msg-box" class="alert alert-danger hidden flex-column" role="alert">
+                            <span id="topic-name-validation-msg" class="hidden">Topic name should not be empty and should contain only lower- and uppercase letters, numbers, dot (.) and underscore (_) values.</span>
+                            <span id="replication-validation-msg" class="hidden">Replication factor should be less or equal to cluster nodes count. Cluster nodes count: <span id="topic-modal-cluster-nodes-placeholder"></span></span>
                         </div>
                         <div>
                             <label for="topic-name-modal-input">Topic name:</label>

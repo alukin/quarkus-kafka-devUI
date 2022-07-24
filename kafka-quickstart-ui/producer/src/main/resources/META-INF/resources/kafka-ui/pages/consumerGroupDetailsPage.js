@@ -44,7 +44,11 @@ export default class ConsumerGroupDetailsPage {
                 tableRow
                     .addClass("pointer")
                     .click(collapseRow.collapse);
-                consumerGroupsTable.append(collapseRow.getCollapseContent(tableRow.children().length, content));
+                consumerGroupsTable.append(
+                    collapseRow
+                        .getCollapseContent(tableRow.children().length, content)
+                        .addClass("no-hover")
+                );
             }
         }
     }

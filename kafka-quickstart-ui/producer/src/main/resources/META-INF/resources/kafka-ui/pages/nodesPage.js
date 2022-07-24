@@ -14,7 +14,7 @@ export default class NodesPage {
 
     open() {
         const req = {
-            action: "getInfo", key: "0", value: "0"
+            action: "getInfo"
         };
         doPost(req, (data) => {
             let that = this;

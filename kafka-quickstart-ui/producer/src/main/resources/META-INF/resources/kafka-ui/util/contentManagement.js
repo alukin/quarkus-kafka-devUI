@@ -65,3 +65,21 @@ export class CollapseRow {
         }
     }
 }
+
+export function showItem(selector){
+    selector.addClass("shown")
+        .removeClass("hidden");
+}
+
+export function hideItem(selector){
+    selector.addClass("hidden")
+        .removeClass("shown");
+}
+
+export function toggleItem(selector) {
+    if (selector.hasClass("shown")) {
+        hideItem(selector);
+    } else {
+        showItem(selector);
+    }
+}

@@ -436,7 +436,6 @@ export default class MessagesPage {
         const partitions = this.getPartitions();
         const totalElements = partitions.map(x => {
             const a = currentContext.partitionOffset.get(x)
-            console.log(a);
             return a;
         })
             .reduce((partialSum, a) => partialSum + a, 0);
