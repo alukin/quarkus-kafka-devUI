@@ -463,8 +463,7 @@
                 </button>
             </div>
             <div id="schema-page">
-                Schema<br>
-                TBD
+                Schema registry is not implemeted yet.<br>
             </div>
             <div id="consumer-groups-page">
                 <div class="card flex-fill top-margin">
@@ -501,9 +500,29 @@
                     </table>
                 </div>
             </div>
-            <div id="access-control-list-page">
-                ACL<br>
-                TBD
+            <div id="access-control-list-page" class="flex-column top-margin">
+                <div class="card d-flex flex-fill">
+                    <div class="card-body">
+                        <b>Kafka cluster id:&nbsp;</b><span id="cluster-id"></span><br>
+                        <b>Controller node (broker):&nbsp;</b><span id="cluster-controller"></span><br>
+                        <b>ACL operations:&nbsp;</b><span id="cluster-acl"></span><br>
+                    </div>
+                </div>
+                <h3 class="top-margin">Access Control Lists</h3>
+                <div class="card flex-fill">
+                    <table class="table" id="acl-table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Operation</th>
+                                <th scope="col">Prinicipal</th>
+                                <th scope="col">Permissions</th>
+                                <th scope="col">Pattern</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div id="nodes-page" class="flex-column top-margin">
                 <div class="card d-flex flex-fill">

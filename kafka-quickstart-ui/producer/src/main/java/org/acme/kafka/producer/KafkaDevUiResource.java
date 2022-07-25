@@ -55,6 +55,10 @@ public class KafkaDevUiResource {
                         message = webUtils.toJson(webUtils.getKafkaInfo());
                         res = true;
                         break;
+                    case "getAclInfo":
+                        message = webUtils.toJson(webUtils.getAclInfo());
+                        res = true;
+                        break;                        
                     case "createTopic":
                         var topicCreateRq = event.body().asPojo(KafkaCreateTopicRequest.class);
                         res = adminClient.createTopic(topicCreateRq);
