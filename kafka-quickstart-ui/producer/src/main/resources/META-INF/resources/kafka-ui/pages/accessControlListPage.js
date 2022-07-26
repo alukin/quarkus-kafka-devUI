@@ -29,9 +29,9 @@ export default class AccessControlListPage{
     }
 
     updateInfo(data) {
-        $('#cluster-id').html(data.clusterId);
-        $('#cluster-controller').html(data.broker);
-        $('#cluster-acl').html(data.aclOperations);
+        $('#acluster-id').html(data.clusterId);
+        $('#acluster-controller').html(data.broker);
+        $('#acluster-acl').html(data.aclOperations);
 
         const acls = data.entires;
         let aclTable = $('#acl-table tbody');
