@@ -1,8 +1,8 @@
 package org.acme.kafka.producer;
 
-import io.quarkus.kafka.client.runtime.KafkaTopicClient;
-import io.quarkus.kafka.client.runtime.ui.model.KafkaMessage;
-import io.quarkus.kafka.client.runtime.ui.model.KafkaMessagePage;
+import io.quarkus.kafka.client.runtime.ui.KafkaTopicClient;
+import io.quarkus.kafka.client.runtime.ui.model.response.KafkaMessage;
+import io.quarkus.kafka.client.runtime.ui.model.response.KafkaMessagePage;
 import io.quarkus.kafka.client.runtime.ui.model.Order;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.ResourceArg;
@@ -11,10 +11,8 @@ import io.quarkus.test.kafka.InjectKafkaCompanion;
 import io.quarkus.test.kafka.KafkaCompanionResource;
 import io.smallrye.reactive.messaging.kafka.companion.KafkaCompanion;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.utils.Bytes;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
